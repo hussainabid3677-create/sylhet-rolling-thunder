@@ -1,7 +1,7 @@
 {
   "name": "Sylhet Rolling Thunder",
   "short_name": "SRT",
-  "description": "Sylhet Rolling Thunder (SRT) ক্লাবের প্লেয়ার র‍্যাঙ্কিং ও রেকর্ড প্ল্যাটফর্ম",
+  "description": "Sylhet Rolling Thunder (SRT) club player rankings and records platform",
   "lang": "bn",
   "start_url": "./",
   "scope": "./",

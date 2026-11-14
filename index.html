@@ -1464,6 +1464,66 @@ h2,.home-section-head h2{letter-spacing:.02em}
 .btn.hp-share{background:linear-gradient(100deg,#FF6B2C,#F5B335)!important}
 .srt-pro .hp-ring{border-radius:50%!important;background:none!important;padding:0!important;box-shadow:0 0 0 3px #0B0B0E,0 0 0 6px var(--sqc),0 0 34px color-mix(in srgb,var(--sqc) 55%,transparent)!important}
 .srt-pro .hp-ring .av{border-radius:50%!important}
+
+/* ===== v4: premium nav + player pass card ===== */
+@media(max-width:680px){
+ .bnav{left:10px!important;right:10px!important;bottom:calc(8px + env(safe-area-inset-bottom,0px))!important;padding:16px 4px 8px!important;border:1px solid transparent!important;border-radius:26px!important;
+   background:linear-gradient(#0D0B08,#090806) padding-box,linear-gradient(135deg,#6B4E1C,#FFD36B 35%,#8A5E16 60%,#FF6B2C) border-box!important;
+   box-shadow:0 18px 40px rgba(0,0,0,.75),0 0 28px rgba(245,179,53,.12)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+ .bnav button{background:none!important;color:#8E8571!important;font:700 10.5px/1.2 var(--f-num,'Saira Condensed')!important;letter-spacing:.14em;text-transform:uppercase;gap:4px!important;padding:2px 0 0!important;overflow:visible}
+ .bnav .bi{display:grid;place-items:center;width:44px;height:30px;transition:all .25s ease}
+ .bnav button[aria-current="page"]{color:#FFD36B!important}
+ .bnav button[aria-current="page"] .bi{width:50px;height:56px;margin-top:-30px;color:#180C03;
+   background:linear-gradient(165deg,#FFE9A8,#F5B335 55%,#D9780F);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+ .bnav button[aria-current="page"]:before{display:none!important}
+ .bnav button[aria-current="page"]:after{content:"";position:absolute;left:50%;top:-34px;width:62px;height:62px;transform:translateX(-50%);z-index:-1;
+   background:radial-gradient(circle,rgba(255,150,40,.55),transparent 68%);filter:blur(6px)}
+ body{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
+}
+/* top tabs: minimal, gold underline */
+.tabs{gap:2px!important;border-bottom:1px solid #2E2414!important;padding:2px 2px 0!important;mask-image:none!important}
+.tab{clip-path:none!important;background:none!important;padding:10px 14px 11px!important;color:var(--muted)!important;position:relative;
+  font-size:13px!important;letter-spacing:.14em!important}
+.tab[aria-selected="true"]{background:none!important;color:var(--gold-hi)!important;box-shadow:none!important}
+.tab[aria-selected="true"]:after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:3px;background:linear-gradient(90deg,#FF6B2C,#FFD36B);border-radius:2px;box-shadow:0 0 10px rgba(255,150,40,.7)}
+/* player pass card (light "collector" card) */
+.pc{position:relative;margin:12px 0 0;border-radius:22px;overflow:hidden;color:#3A4651;flex:none;
+  background:radial-gradient(rgba(60,75,90,.07) 1px,transparent 1.5px) 0 0/9px 9px,linear-gradient(180deg,#F8F9FB,#E4E8EE);
+  box-shadow:0 18px 40px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,255,255,.7)}
+.pc-cap{padding:12px 16px 0;font:700 10.5px/1 var(--f-num,'Saira Condensed');letter-spacing:.18em;color:#8C97A2}
+.pc-ovr{position:absolute;left:14px;top:34px;z-index:3;width:74px;padding:8px 0 6px;text-align:center;background:rgba(255,255,255,.85);border:1px solid #D5DAE0;border-radius:12px;box-shadow:0 4px 10px rgba(30,40,50,.12)}
+.pc-ovr b{display:block;font:900 40px/1 var(--f-num,'Saira Condensed');color:#2F3B46}.pc-ovr i{font:800 10px/1 var(--f-num,'Saira Condensed');font-style:normal;letter-spacing:.3em;color:#8C97A2}
+.pc-logo{position:absolute;right:14px;top:30px;width:58px;height:58px;z-index:3;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+.pc-photo{position:relative;height:330px;margin-top:-6px}
+.pc-img{position:absolute;right:0;bottom:0;width:80%;height:100%;object-fit:cover;object-position:50% 20%;border-radius:0 0 0 60px;
+  -webkit-mask-image:linear-gradient(180deg,#000 62%,transparent 100%);mask-image:linear-gradient(180deg,#000 62%,transparent 100%)}
+.pc-ghost{position:absolute;left:-8%;top:-6%;width:84%;height:96%;object-fit:cover;filter:grayscale(1) contrast(.9) brightness(1.25);opacity:.2;
+  -webkit-mask-image:linear-gradient(180deg,#000 40%,transparent 100%);mask-image:linear-gradient(180deg,#000 40%,transparent 100%)}
+.pc-init{position:absolute;right:8%;bottom:20px;width:62%;aspect-ratio:1;display:grid;place-items:center;border-radius:50%;background:#C9D0D8;color:#fff;font:900 140px/1 var(--f-num,'Saira Condensed')}
+.pc-tier{position:absolute;left:16px;bottom:118px;z-index:3;display:flex;align-items:center;gap:8px;font:800 12px/1 var(--f-num,'Saira Condensed');letter-spacing:.18em;color:#55616C}
+.pc-coin{width:24px;height:24px;border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,.3),inset 0 0 0 2px rgba(255,255,255,.35)}
+.pc-id{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,1fr) 1px auto;align-items:center;gap:14px;padding:0 18px 14px;margin-top:-92px}
+.pc-nm{display:flex;flex-direction:column;font-family:var(--f-num,'Saira Condensed');text-transform:uppercase;line-height:.95;overflow-wrap:anywhere}
+.pc-nm span{font-weight:700;font-size:30px;color:#4C5A66;letter-spacing:.02em}.pc-nm b{font-weight:900;font-size:38px;color:#35424E;letter-spacing:.01em}
+.pc-sep{width:1px;height:46px;background:#BFC7CF}
+.pc-club{display:flex;flex-direction:column;align-items:flex-start;font-family:var(--f-num,'Saira Condensed');color:#55616C;line-height:1.05}
+.pc-club b{font-size:20px;letter-spacing:.12em;font-weight:800}.pc-club span{font-size:12px;letter-spacing:.18em;font-weight:700;color:#8C97A2}
+.pc-stats{display:grid;grid-template-columns:repeat(4,1fr);margin:0 12px;padding:10px 0;border-top:1px solid #CBD2D9;border-bottom:1px solid #CBD2D9;text-align:center}
+.pc-stats b{display:block;font:900 26px/1 var(--f-num,'Saira Condensed');color:#35424E}.pc-stats i{font:700 10px/1 var(--f-num,'Saira Condensed');font-style:normal;letter-spacing:.24em;color:#8C97A2}
+.pc-foot{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 12px;background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(170,180,192,.25));
+  font:700 13px/1 var(--f-num,'Saira Condensed');letter-spacing:.16em;color:#55616C}
+.pc-foot b{color:#2F3B46}.pc-foot em{font:900 17px/1 var(--f-num,'Saira Condensed');font-style:normal;min-width:36px;height:36px;display:grid;place-items:center;border-radius:50%;border:1px solid #BFC7CF;background:#fff;color:#35424E;letter-spacing:0}
+.pc.sq-main{box-shadow:0 18px 40px rgba(0,0,0,.55),0 0 0 3px var(--sq-main)}.pc.sq-academy{box-shadow:0 18px 40px rgba(0,0,0,.55),0 0 0 3px var(--sq-academy)}.pc.sq-youth{box-shadow:0 18px 40px rgba(0,0,0,.55),0 0 0 3px var(--sq-youth)}
+.pc-after{display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 0 2px;flex:none}
+@media(max-width:680px){ .bnav button[aria-current="page"]{background:none!important;color:#FFD36B!important} }
+.pc-cap{position:relative;z-index:4}
+.pc-photo{height:310px}
+.pc-img{width:86%;border-radius:0!important;
+  -webkit-mask-image:radial-gradient(ellipse 62% 70% at 54% 38%,#000 52%,transparent 100%);mask-image:radial-gradient(ellipse 62% 70% at 54% 38%,#000 52%,transparent 100%)}
+.pc-ghost{-webkit-mask-image:radial-gradient(ellipse 70% 70% at 40% 40%,#000 30%,transparent 100%);mask-image:radial-gradient(ellipse 70% 70% at 40% 40%,#000 30%,transparent 100%)}
+.pc-id{margin-top:-30px}
+.pc-tier{bottom:auto;left:16px;top:210px}
+.pc-nm span{font-size:28px}.pc-nm b{font-size:40px}
 </style>
 </head>
 <body>
@@ -3414,6 +3474,25 @@ h2,.home-section-head h2{letter-spacing:.02em}
     S.wins.forEach(function (w) { if (w.playerId === id && w.ts >= r.start && w.ts < r.end) { if (w.type === 'draw') draws++; else if (w.type === 'loss') losses++; else wins++; goals += w.goals || 0; } });
     return { wins: wins, draws: draws, losses: losses, goals: goals };
   }
+  function passCard(p, id, rt) {
+    var sq = squadOf(p), tier = tierOf(rt), s = statsFor(id, 'all');
+    var parts = String(p.name || '').trim().split(/\\s+/), last = parts.length > 1 ? parts.pop() : '', first = parts.join(' ');
+    var ph = p.photo ? h('img', { class: 'pc-img', src: p.photo, alt: '' }) : h('span', { class: 'pc-init' }, initial(p.name));
+    var ghost = p.photo ? h('img', { class: 'pc-ghost', src: p.photo, alt: '', 'aria-hidden': 'true' }) : null;
+    function st(n, l) { return h('div', null, h('b', null, String(n)), h('i', null, l)); }
+    return h('section', { class: 'pc sq-' + sq },
+      h('div', { class: 'pc-cap' }, squadCode(sq) + ' SQUAD · PLAYER PROFILE · ' + tier.n),
+      h('div', { class: 'pc-ovr' }, h('b', null, String(rt)), h('i', null, 'OVR')),
+      h('img', { class: 'pc-logo', src: 'logo.webp', alt: 'SRT' }),
+      h('div', { class: 'pc-photo' }, ghost, ph),
+      h('div', { class: 'pc-tier' }, h('span', { class: 'pc-coin', style: 'background:radial-gradient(circle at 35% 30%,' + tier.g[0] + ',' + tier.g[1] + ' 55%,' + tier.g[2] + ')' }), tier.n),
+      h('div', { class: 'pc-id' },
+        h('div', { class: 'pc-nm' }, first ? h('span', null, first) : null, h('b', null, last || (first ? '' : p.name))),
+        h('i', { class: 'pc-sep' }),
+        h('div', { class: 'pc-club' }, h('b', null, 'SYLHET'), h('span', null, 'ROLLING THUNDER'))),
+      h('div', { class: 'pc-stats' }, st(s.wins, 'WIN'), st(s.draws, 'DRAW'), st(s.losses, 'LOSS'), st(s.goals, 'GOAL')),
+      h('div', { class: 'pc-foot' }, h('span', null, '⚽ CATEGORY : ', h('b', null, squadName(sq))), h('em', null, p.number ? String(p.number) : '—')));
+  }
   function renderSheet() {
     var sh = $('#sheet');
     sh.textContent = '';
@@ -3465,7 +3544,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
           h('div', { class: 'bt' }, h('strong', null, x.b.n + (x.on && x.n > 1 ? ' ×' + x.n : '')), h('span', { class: 'd' }, x.b.d)));
       })));
     var fifaBtn = h('button', { class: 'btn hp-share', onclick: function () { openFifa(id); } }, '🃏 Share Player Card');
-    sh.append(head, squadRibbon(p), pro, mkProfileBlock(id), fifaBtn, hpRadar(id), hpTrend(id), tbl, bsec, hist);
+    sh.append(head, passCard(p, id, rt), h('div', { class: 'pc-after' }, ttlChip(id), hpFormDots(id)), mkProfileBlock(id), fifaBtn, hpRadar(id), hpTrend(id), tbl, bsec, hist);
     if (S.canWrite) {
       var key = 'player:' + id, act = h('div', { class: 'actions' });
       if (S.confirm === key) {

@@ -4887,7 +4887,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
   /* Rules: everyone gets admin announcements; a player gets only their own match results and achievements. */
   S.ntc = { list: [], loaded: false, err: false, tab: 'all', inView: false, dotFrom: 0, diag: null, diagBusy: false, unsub: null };
   function ntSupported() { return 'Notification' in window && 'serviceWorker' in navigator; }
-  function ntOn() { try { return ntSupported() && Notification.permission === 'granted' && localStorage.getItem('srt-notif') !== '0'; } catch (e) { return false; } }
+  function ntOn() { return false; try { return ntSupported() && Notification.permission === 'granted' && localStorage.getItem('srt-notif') !== '0'; } catch (e) { return false; } }
   function ntMe() { try { var id = localStorage.getItem('srt-me'); return id && S.players.has(id) ? id : ''; } catch (e) { return ''; } }
   function ntSeen() { try { return Number(localStorage.getItem('srt-nt-seen')) || 0; } catch (e) { return 0; } }
   function ntMsg() {
@@ -4924,7 +4924,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     try { localStorage.removeItem('srt-tk'); } catch (e) { /* ignore */ }
     toast('এই ফোনে নোটিফিকেশন বন্ধ করা হয়েছে'); renderHeader(); renderView();
   }
-  function ntBanner() {
+  function ntBanner() { return null;
     var dis = false; try { dis = localStorage.getItem('srt-nt-dis') === '1'; } catch (e) { /* ignore */ }
     if (dis || !ntSupported() || Notification.permission !== 'default') return null;
     return h('section', { class: 'nt-banner' }, icoEl('bell', 24),
@@ -4937,7 +4937,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
   function ntCheckSignings() { }
 
   /* ----- list of notifications (read from Firestore) ----- */
-  function ntcListen() {
+  function ntcListen() { return;
     if (!S.db || S.ntc.unsub) return;
     S.ntc.unsub = S.db.collection('notifications').orderBy('ts', 'desc').limit(80).onSnapshot(function (sn) {
       S.ntc.list = sn.docs.map(function (d) { var x = d.data(); x.id = d.id; x.ts = Number(x.ts) || 0; return x; });
@@ -5031,7 +5031,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
   }
   /* one merged notification per player: results of the last few seconds + achievements */
   var NP = { q: {}, t: 0 };
-  function ntPersonal(pid, type, goals, pre) {
+  function ntPersonal(pid, type, goals, pre) { return;
     if (!S.canWrite || !pid || !S.players.has(pid)) return;
     var q = NP.q[pid] || (NP.q[pid] = { W: 0, D: 0, L: 0, G: 0, ach: [] }), g = goals || 0;
     if (type === 'draw') q.D++; else if (type === 'loss') q.L++; else q.W++;
@@ -5061,7 +5061,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
   window.addEventListener('pagehide', ntFlush);
   window.addEventListener('hashchange', function () { if (location.hash === '#nt') { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* ignore */ } goTab('notifs'); } });
 
-  function ntAdminBox() {
+  function ntAdminBox() { return h('span', { hidden: true });
     if (!S.canWrite) return null;
     var ti = h('input', { type: 'text', maxlength: '60', placeholder: 'যেমন: আজ রাতে ফাইনাল', 'aria-label': 'শিরোনাম' });
     var bo = h('input', { type: 'text', maxlength: '140', placeholder: 'যেমন: রাত ৯টায় সবাই লাইভে আসুন', 'aria-label': 'বার্তা' });
@@ -5081,7 +5081,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
   function hdrTools() {
     var light = themeNow() === 'light', n = ntcUnread();
     return h('div', { class: 'hdr-tools' },
-      h('button', { class: 'iconbtn nc-bell', 'aria-label': 'নোটিফিকেশন' + (n ? ' (' + n + 'টি নতুন)' : ''), title: 'নোটিফিকেশন', onclick: function () { goTab('notifs'); } },
+      null && h('button', { class: 'iconbtn nc-bell', 'aria-label': 'নোটিফিকেশন' + (n ? ' (' + n + 'টি নতুন)' : ''), title: 'নোটিফিকেশন', onclick: function () { goTab('notifs'); } },
         icoEl('bell', 19), n ? h('i', { class: 'nc-badge' }, n > 9 ? '৯+' : bn(n)) : null),
       h('button', { class: 'iconbtn', 'aria-label': light ? 'ডার্ক থিম' : 'লাইট থিম', title: light ? 'ডার্ক থিম' : 'লাইট থিম', onclick: themeToggle }, icoEl(light ? 'moon' : 'sun', 19)));
   }

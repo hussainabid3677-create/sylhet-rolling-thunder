@@ -1414,6 +1414,56 @@ h2,.home-section-head h2{letter-spacing:.02em}
  body{padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
  .bmore{bottom:calc(92px + env(safe-area-inset-bottom,0px))!important}
 }
+
+/* ===== v3: squads, player list rows, passport-style profile ===== */
+:root{--sq-main:#F5B335;--sq-academy:#FF6B2C;--sq-youth:#4FE08A}
+.sq-main{--sqc:var(--sq-main)}.sq-academy{--sqc:var(--sq-academy)}.sq-youth{--sqc:var(--sq-youth)}
+.sq-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sq-tab{display:flex;flex-direction:column;align-items:center;gap:1px;padding:10px 4px 9px;background:#14110B;border:0;color:var(--muted);
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%);box-shadow:inset 0 3px 0 #2B2216;position:relative}
+.sq-tab b{font:900 28px/1 var(--f-num,'Saira Condensed');color:var(--sqc)}
+.sq-tab span{font:800 13px/1 var(--f-num,'Saira Condensed');letter-spacing:.2em;color:var(--ink)}
+.sq-tab em{font-style:normal;font-size:11px;opacity:.75}
+.sq-tab[aria-selected="true"]{background:linear-gradient(180deg,color-mix(in srgb,var(--sqc) 30%,#14110B),#14110B);box-shadow:inset 0 3px 0 var(--sqc)}
+.plist{display:flex;flex-direction:column;gap:8px}
+.pl-add{padding:14px;background:none;border:2px dashed #4A3817;color:var(--gold-hi);font-weight:800;border-radius:4px 16px 4px 16px;letter-spacing:.02em}
+.pl-row{display:grid;grid-template-columns:44px 64px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 12px 10px 6px;text-align:left;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--sqc) 10%,#14110B),#110F0B 55%);border:0;border-left:4px solid var(--sqc);
+  border-radius:0 14px 14px 0;color:var(--ink);position:relative}
+.pl-row:active{filter:brightness(1.25)}
+.pl-no{font:900 30px/1 var(--f-num,'Saira Condensed');color:transparent;-webkit-text-stroke:1.2px var(--sqc);text-align:center}
+.pl-row .av{--s:64px;border-radius:50%;box-shadow:0 0 0 2px #0B0B0E,0 0 0 4px var(--sqc)}
+.pl-mid{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pl-mid strong{font-size:16.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-mid .ttl{font-size:12px!important;opacity:.9}
+.pl-st{font-size:12px;color:var(--muted)}
+.pl-ovr{display:flex;flex-direction:column;align-items:center;min-width:50px;padding:6px 8px;background:#050505;border:1px solid #3A2C14;border-radius:8px}
+.pl-ovr b{font:900 26px/1 var(--f-num,'Saira Condensed');color:var(--sqc)}.pl-ovr i{font:700 9.5px/1 var(--f-num,'Saira Condensed');font-style:normal;letter-spacing:.2em;color:var(--muted);padding-top:3px}
+.pl-empty{text-align:center;padding:24px 8px}
+/* form selector */
+.sq-pick{display:flex;gap:8px;margin-top:6px}
+.sq-opt{flex:1;padding:10px 4px;background:#14110B;border:1px solid #3A2C14;color:var(--ink);font-weight:700;border-radius:10px}
+.sq-opt.on{background:var(--sqc);color:#180C03;border-color:transparent}
+/* profile "passport" */
+.srt-rib{display:flex;align-items:center;gap:10px;margin:10px -16px 0;padding:7px 16px;background:linear-gradient(90deg,var(--sqc),transparent);color:#180C03}
+.srt-rib span{font:900 13px/1 var(--f-num,'Saira Condensed');letter-spacing:.3em;background:#0B0B0E;color:var(--sqc);padding:4px 8px}
+.srt-rib b{font:800 13px/1 var(--f-num,'Saira Condensed');letter-spacing:.14em}
+.srt-pro{flex:none!important;min-height:300px;flex-direction:column!important;align-items:center!important;text-align:center;position:relative;overflow:hidden;padding:18px 8px 6px;margin-top:6px;
+  background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--sqc) 18%,transparent),transparent 60%)}
+.srt-pro:before{content:attr(data-no);position:absolute;left:50%;top:-6px;transform:translateX(-50%);font:900 190px/1 var(--f-num,'Saira Condensed');
+  color:transparent;-webkit-text-stroke:2px color-mix(in srgb,var(--sqc) 38%,transparent);pointer-events:none;z-index:0;white-space:nowrap}
+.srt-pro>*{position:relative;z-index:1}
+.srt-pro>div{display:flex;flex-direction:column;align-items:center}
+.srt-pro .pro h2,.srt-pro h2{font-size:28px!important;letter-spacing:.02em}
+.srt-pro .no{display:none}
+.srt-pro .hp-ovr{margin-top:6px}
+.sheet .tbl th{background:#1B150B;color:var(--gold-hi);font-family:var(--f-num,'Saira Condensed');letter-spacing:.16em;text-transform:uppercase}
+.sheet .tbl td.n{font:800 20px var(--f-num,'Saira Condensed')}
+.sheet .h3{font-family:var(--f-num,'Saira Condensed')!important;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-hi);border-left:4px solid var(--thunder);padding-left:10px}
+.sheet{border-radius:26px 26px 0 0!important}
+.btn.hp-share{background:linear-gradient(100deg,#FF6B2C,#F5B335)!important}
+.srt-pro .hp-ring{border-radius:50%!important;background:none!important;padding:0!important;box-shadow:0 0 0 3px #0B0B0E,0 0 0 6px var(--sqc),0 0 34px color-mix(in srgb,var(--sqc) 55%,transparent)!important}
+.srt-pro .hp-ring .av{border-radius:50%!important}
 </style>
 </head>
 <body>
@@ -2148,36 +2198,55 @@ h2,.home-section-head h2{letter-spacing:.02em}
   function sortedPlayers() {
     return Array.from(S.players.entries()).sort(function (a, b) { return (a[1].name || '').localeCompare(b[1].name || '', 'bn'); });
   }
+  var SQUADS = [['main', 'মেইন স্কোয়াড', 'MAIN'], ['academy', 'একাডেমি', 'ACADEMY'], ['youth', 'ইয়ুথ', 'YOUTH']];
+  function squadOf(p) { return p && (p.squad === 'academy' || p.squad === 'youth') ? p.squad : 'main'; }
+  function squadName(k) { var r = SQUADS.filter(function (x) { return x[0] === k; })[0]; return r ? r[1] : ''; }
+  function squadCode(k) { var r = SQUADS.filter(function (x) { return x[0] === k; })[0]; return r ? r[2] : ''; }
+  function squadRibbon(p) {
+    var sq = squadOf(p);
+    return h('div', { class: 'srt-rib sq-' + sq }, h('span', null, squadCode(sq)), h('b', null, 'SRT · ' + squadName(sq)));
+  }
   function viewPlayers() {
     var all = ranking(-Infinity, Infinity);
     var byId = {}; all.forEach(function (r) { byId[r.id] = r; });
-    var grid = h('div', { class: 'pgrid' });
+    var cur = S.plSquad || 'main';
+    var counts = { main: 0, academy: 0, youth: 0 };
+    S.players.forEach(function (p) { counts[squadOf(p)]++; });
+    var tabsEl = h('div', { class: 'sq-tabs', role: 'tablist' });
+    var listEl = h('div', { class: 'plist' });
     var cnt = h('div', { class: 'cnt' });
-    function fillGrid() {
-      grid.textContent = '';
-      if (S.canWrite && !S.qPl.trim()) {
-        var plus = h('span', { class: 'plus' }); plus.append(icon('plus'));
-        grid.append(h('button', { class: 'card pcard add', onclick: function () { openSheet('new'); } }, plus, 'নতুন প্লেয়ার'));
-      }
-      var list = sortedPlayers().filter(function (e) { return matchPlayer(e[1], S.qPl); });
-      list.forEach(function (e) {
-        var st = byId[e[0]] || { wins: 0, goals: 0 };
-        grid.append(h('button', { class: 'card pcard', onclick: function () { openSheet('profile', e[0]); } },
-          avatar(e[1]),
-          h('div', { class: 'pinfo' },
-            h('strong', null, e[1].name),
-            ttlChip(e[0]),
-            mkChip(e[0]),
-            h('span', null, (e[1].number ? '#' + e[1].number + ' · ' : '') + st.wins + ' জয় · ' + st.goals + ' গোল'),
-            h('span', { class: 'mini', 'aria-hidden': 'true' }, badgesFor(e[0]).filter(function (x) { return x.on; }).slice(0, 5).map(function (x) { return x.b.e; }).join(' ')))));
+    function fillAll() {
+      tabsEl.textContent = '';
+      SQUADS.forEach(function (s) {
+        tabsEl.append(h('button', { type: 'button', role: 'tab', class: 'sq-tab sq-' + s[0], 'aria-selected': String(cur === s[0]),
+          onclick: function () { S.plSquad = s[0]; cur = s[0]; fillAll(); } },
+          h('b', null, String(counts[s[0]])), h('span', null, s[2]), h('em', null, s[1])));
       });
-      if (!list.length && S.players.size) grid.append(h('p', { class: 'muted' }, 'কোনো প্লেয়ার পাওয়া যায়নি।'));
-      cnt.textContent = S.qPl.trim() ? list.length + ' জন পাওয়া গেছে' : 'মোট ' + S.players.size + ' জন প্লেয়ার';
+      fillList();
     }
-    fillGrid();
-    var kids = [];
-    if (S.players.size > 6) kids.push(searchBox('pl', function () { return S.qPl; }, function (v) { S.qPl = v; }, fillGrid, 'প্লেয়ারের নাম বা নম্বর লিখে খুঁজুন'), cnt);
-    kids.push(grid);
+    function fillList() {
+      listEl.textContent = '';
+      var q = S.qPl.trim();
+      if (S.canWrite && !q) {
+        listEl.append(h('button', { type: 'button', class: 'pl-add', onclick: function () { openSheet('new'); S.draft.squad = cur; renderSheet(); } }, '＋ নতুন ' + squadName(cur) + ' প্লেয়ার'));
+      }
+      var list = sortedPlayers().filter(function (e) { return (q ? true : squadOf(e[1]) === cur) && matchPlayer(e[1], S.qPl); });
+      list.forEach(function (e) {
+        var st = byId[e[0]] || { wins: 0, goals: 0 }, p = e[1], sq = squadOf(p), rt = ratingFor(e[0]);
+        listEl.append(h('button', { type: 'button', class: 'pl-row sq-' + sq, onclick: function () { openSheet('profile', e[0]); } },
+          h('span', { class: 'pl-no' }, p.number ? String(p.number) : '—'),
+          avatar(p, 64),
+          h('div', { class: 'pl-mid' }, h('strong', null, p.name), ttlChip(e[0]), mkChip(e[0]),
+            h('span', { class: 'pl-st' }, st.wins + ' জয় · ' + st.goals + ' গোল' + (q ? ' · ' + squadName(sq) : ''))),
+          h('span', { class: 'pl-ovr' }, h('b', null, String(rt)), h('i', null, 'OVR'))));
+      });
+      if (!list.length) listEl.append(h('p', { class: 'muted pl-empty' }, q ? 'কোনো প্লেয়ার পাওয়া যায়নি।' : 'এই স্কোয়াডে এখনো কেউ নেই।'));
+      cnt.textContent = q ? list.length + ' জন পাওয়া গেছে' : squadName(cur) + ' · ' + counts[cur] + ' জন';
+    }
+    var kids = [tabsEl];
+    if (S.players.size > 6) kids.push(searchBox('pl', function () { return S.qPl; }, function (v) { S.qPl = v; }, fillList, 'প্লেয়ারের নাম বা নম্বর লিখে খুঁজুন'));
+    kids.push(cnt, listEl);
+    fillAll();
     if (!S.players.size && !S.canWrite) kids.push(h('p', { class: 'muted' }, 'এখনো কোনো প্লেয়ার যোগ হয়নি।'));
     return h('div', { class: 'stack' }, kids);
   }
@@ -3331,7 +3400,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     S.sheet = { mode: mode, id: id || null };
     S.confirm = null;
     if (mode === 'login') S.lg = { email: '', pw: '', busy: false, show: false, err: '' };
-    if (mode === 'new') S.draft = { name: '', number: '', photo: null, busy: false };
+    if (mode === 'new') S.draft = { name: '', number: '', photo: null, squad: 'main', busy: false };
     renderSheet();
     $('#scrim').hidden = false;
     setTimeout(function () { var s = $('#sheet'); s.scrollTop = 0; s.focus(); }, 0);
@@ -3370,7 +3439,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     if (!p) { closeSheet(); return; }
     var head = h('div', { class: 'sheet-head' }, h('p', { class: 'eyebrow' }, 'প্লেয়ার প্রোফাইল'), closeBtn);
     var rt = ratingFor(id), tc = hpTierCol(rt), ring = h('span', { class: 'hp-ring', style: '--rc:' + tc[0] + ';--rg:' + tc[1] }, avatar(p, 104));
-    var pro = h('div', { class: 'pro' }, ring,
+    var pro = h('div', { class: 'pro srt-pro sq-' + squadOf(p), 'data-no': p.number ? String(p.number) : '' }, ring,
       h('div', null, h('h2', null, p.name), p.number ? h('p', { class: 'no' }, '#' + p.number) : null,
         h('div', { class: 'hp-ovr', style: '--rc:' + tc[0] }, h('b', null, String(rt)), h('span', null, 'OVR · SRT Rating')),
         ttlChip(id), h('div', { style: 'margin-top:10px' }, hpFormDots(id))));
@@ -3396,7 +3465,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
           h('div', { class: 'bt' }, h('strong', null, x.b.n + (x.on && x.n > 1 ? ' ×' + x.n : '')), h('span', { class: 'd' }, x.b.d)));
       })));
     var fifaBtn = h('button', { class: 'btn hp-share', onclick: function () { openFifa(id); } }, '🃏 Share Player Card');
-    sh.append(head, pro, mkProfileBlock(id), fifaBtn, hpRadar(id), hpTrend(id), tbl, bsec, hist);
+    sh.append(head, squadRibbon(p), pro, mkProfileBlock(id), fifaBtn, hpRadar(id), hpTrend(id), tbl, bsec, hist);
     if (S.canWrite) {
       var key = 'player:' + id, act = h('div', { class: 'actions' });
       if (S.confirm === key) {
@@ -3404,7 +3473,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
           h('button', { class: 'btn danger-solid', onclick: function () { deletePlayer(id); } }, 'হ্যাঁ, মুছুন'),
           h('button', { class: 'btn ghost', onclick: function () { S.confirm = null; renderSheet(); } }, 'থাক'));
       } else {
-        act.append(h('button', { class: 'btn', onclick: function () { S.draft = { name: p.name || '', number: p.number || '', photo: p.photo || null, busy: false }; S.sheet = { mode: 'edit', id: id }; renderSheet(); } }, 'এডিট'),
+        act.append(h('button', { class: 'btn', onclick: function () { S.draft = { name: p.name || '', number: p.number || '', photo: p.photo || null, squad: squadOf(p), busy: false }; S.sheet = { mode: 'edit', id: id }; renderSheet(); } }, 'এডিট'),
           h('button', { class: 'btn danger', onclick: function () { S.confirm = key; renderSheet(); } }, 'প্লেয়ার মুছুন'));
       }
       sh.append(act);
@@ -3422,6 +3491,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
       h('input', { type: 'text', id: 'pName', maxlength: '40', value: d.name, autocomplete: 'off', oninput: function (e) { S.draft.name = e.target.value; } })));
     wrap.append(h('label', { class: 'field' }, 'জার্সি নম্বর (ঐচ্ছিক)',
       h('input', { type: 'text', id: 'pNum', inputmode: 'numeric', maxlength: '3', value: d.number, autocomplete: 'off', oninput: function (e) { S.draft.number = e.target.value.replace(/\D/g, ''); } })));
+    wrap.append(h('div', { class: 'field' }, 'স্কোয়াড', h('div', { class: 'sq-pick' }, SQUADS.map(function (sq) { return h('button', { type: 'button', class: 'sq-opt sq-' + sq[0] + (d.squad === sq[0] ? ' on' : ''), onclick: function () { S.draft.squad = sq[0]; renderSheet(); } }, sq[1]); }))));
     wrap.append(h('div', { class: 'actions' },
       h('button', { class: 'btn', disabled: d.busy, onclick: savePlayer }, d.busy ? 'সেভ হচ্ছে…' : 'সেভ করুন'),
       h('button', { class: 'btn ghost', onclick: function () { if (mode === 'edit') { S.sheet = { mode: 'profile', id: S.sheet.id }; renderSheet(); } else closeSheet(); } }, 'বাতিল')));
@@ -3458,7 +3528,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     if (!S.db) return;
     d.busy = true; renderSheet();
     try {
-      var data = { name: name, number: d.number.trim(), photo: d.photo || null };
+      var data = { name: name, number: d.number.trim(), photo: d.photo || null, squad: d.squad || 'main' };
       if (S.sheet.mode === 'new') {
         data.createdAt = Date.now();
         await S.db.collection('players').add(data);

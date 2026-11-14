@@ -1554,6 +1554,28 @@ h2,.home-section-head h2{letter-spacing:.02em}
 .hp-slide{transition:opacity .35s ease,transform .35s ease,filter .35s ease!important}
 .hx-prog{height:3px!important;background:rgba(255,255,255,.08)!important}
 @media(prefers-reduced-motion:reduce){.hx-slide:after,.hx-big,.hx-ph,.hx-glow,.hx-info>*{animation:none!important}}
+
+/* ===== Arena (fun tab) ===== */
+.arena-hero{position:relative;overflow:hidden;padding:16px 16px 14px;border-radius:22px;border:1px solid color-mix(in srgb,var(--gold,#E9C46A) 45%,transparent);background:radial-gradient(120% 140% at 0% 0%,#7a1f10 0%,#2a0f0b 55%,#120b0a 100%)}
+.arena-hero::before{content:"";position:absolute;inset:-40% -20% auto auto;width:240px;height:240px;background:conic-gradient(from 0deg,transparent,rgba(255,150,60,.35),transparent 40%);animation:arSpin 8s linear infinite;pointer-events:none}
+@keyframes arSpin{to{transform:rotate(360deg)}}
+.ah-k{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;color:#FFD36B;background:rgba(0,0,0,.35);padding:4px 10px;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.ah-row{display:flex;gap:12px;align-items:center;margin:12px 0 8px;position:relative}
+.ah-n{font-size:20px;color:#fff;display:block}
+.ah-row p{margin:2px 0 0;font-size:14px;color:#f3dcc8;line-height:1.35}
+.ah-f{font-size:11px;color:#c9a58a;position:relative}
+.arena-nav{overflow-x:auto;scrollbar-width:none;margin:0 -2px}
+.arena-nav::-webkit-scrollbar{display:none}
+.arena-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.at{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 4px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(160deg,#1d1512,#120d0b);color:#e8d9cc;cursor:pointer;transition:transform .2s,border-color .2s,background .2s}
+.at-e{font-size:24px;line-height:1;transition:transform .25s}
+.at b{font-size:13px;font-weight:700}
+.at i{font-style:normal;font-size:9px;letter-spacing:.18em;opacity:.55}
+.at:active{transform:scale(.96)}
+.at[aria-pressed="true"]{border-color:#FF7A3D;background:linear-gradient(160deg,#c2341a,#6a1a0e);color:#fff;box-shadow:0 6px 22px rgba(255,90,40,.35)}
+.at[aria-pressed="true"] .at-e{transform:scale(1.2) rotate(-6deg)}
+.at[aria-pressed="true"] i{opacity:.9;color:#FFD36B}
+@media (prefers-reduced-motion:reduce){.arena-hero::before{animation:none}}
 </style>
 </head>
 <body>
@@ -1873,7 +1895,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     tabs.push(['ballon', 'Golden Bolt']);
     tabs.push(['moments', 'মুহূর্ত']);
     tabs.push(['team', 'অ্যাডমিন']);
-    tabs.push(['fun', '🎉 মজা']);
+    tabs.push(['fun', '⚡ অ্যারেনা']);
     tabs.forEach(function (x) {
       var b = h('button', {
         class: 'tab' + (x[0] === 'fun' ? ' funtab' : ''), role: 'tab', 'aria-selected': S.tab === x[0] ? 'true' : 'false',
@@ -1882,7 +1904,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
       if (x[0] === 'fun') {
         var ic = document.createElement('span'); ic.className = 'funic'; ic.setAttribute('aria-hidden', 'true');
         ic.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18"><defs><linearGradient id="gfun" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF1B8"/><stop offset=".55" stop-color="#E7C26A"/><stop offset="1" stop-color="#C9923A"/></linearGradient></defs><path d="M10 2.5l1.9 5.6 5.6 1.9-5.6 1.9L10 17.5l-1.9-5.6L2.5 10l5.6-1.9z" fill="url(#gfun)"/><path d="M18.5 13.5l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z" fill="url(#gfun)"/><path d="M19 2.5l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6z" fill="url(#gfun)"/></svg>';
-        b.append(ic, h('span', null, 'মজা'));
+        b.append(ic, h('span', null, 'অ্যারেনা'));
       }
       t.append(b);
     });
@@ -2509,7 +2531,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
       else { var w = AWARDS[rand(AWARDS.length)]; r.cur = { id: id, e: w[0], t: 'FUNNY AWARD', line: w[1] }; }
       renderView();
     }
-    var box = h('section', { class: 'card panel' }, h('h2', null, '🔥 রোস্ট মেশিন'),
+    var box = h('section', { class: 'card panel' }, h('h2', null, '🌶️ ঝাল মশলা'),
       h('p', { class: 'muted small' }, 'এক ক্লিকে একজন প্লেয়ারকে (মজা করে!) রোস্ট বা ফানি অ্যাওয়ার্ড। সবাই হাসুক, কেউ রাগ করবে না 😄'),
       h('div', { class: 'btnrow' }, h('button', { class: 'btn', onclick: function () { go('roast'); } }, '🔥 রোস্ট করো'), h('button', { class: 'btn ghost', onclick: function () { go('award'); } }, '🏆 ফানি অ্যাওয়ার্ড')));
     var root = h('div', { class: 'stack' }, box);
@@ -2533,7 +2555,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
         h('span', { class: 'r' }, String(e.r)), h('span', { class: 'tn' }, t.n), avatar(p, 56), h('span', { class: 'nm' }, p.name)));
     });
     var counts = { legend: 0, gold: 0, silver: 0, bronze: 0 }; list.forEach(function (e) { counts[tierOf(e.r).k]++; });
-    return h('section', { class: 'card panel' }, h('h2', null, '🃏 কার্ড কালেকশন'),
+    return h('section', { class: 'card panel' }, h('h2', null, '🎴 কার্ড ভল্ট'),
       h('p', { class: 'muted small' }, 'জিতলে আর গোল দিলে রেটিং বাড়ে, হারলে কমে। তাই শুধু বেশি খেললেই লিজেন্ড হওয়া যায় না: ব্রোঞ্জ → সিলভার (৬৫+) → গোল্ড (৭৫+) → লিজেন্ড (৮৮+)। কার্ডে চাপ দিলে শেয়ার করা যাবে।'),
       h('p', { class: 'small tierline' }, '👑 ' + counts.legend + ' লিজেন্ড · 🥇 ' + counts.gold + ' গোল্ড · 🥈 ' + counts.silver + ' সিলভার · 🥉 ' + counts.bronze + ' ব্রোঞ্জ'), grid);
   }
@@ -3117,7 +3139,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     if (G.mode === 'shmenu') { root.append(shMenu()); return root; }
     if (G.mode === 'sq') { root.append(viewSeq()); return root; }
     if (G.mode === 'res' && G.res) { root.append(resultBox(), scoreBoard()); return root; }
-    var hub = h('section', { class: 'card panel' }, h('h2', null, '🎮 গেম জোন'), h('p', { class: 'muted small' }, 'দুইটা গেম, প্রতিটায় সর্বোচ্চ ১০০০। দুই গেমের সেরা স্কোর মিলিয়ে লিডারবোর্ডে টপ স্কোরার!'));
+    var hub = h('section', { class: 'card panel' }, h('h2', null, '🕹️ চ্যালেঞ্জ জোন'), h('p', { class: 'muted small' }, 'দুইটা গেম, প্রতিটায় সর্বোচ্চ ১০০০। দুই গেমের সেরা স্কোর মিলিয়ে লিডারবোর্ডে টপ স্কোরার!'));
     var okG = S.players.size >= 4 && withPhoto >= 1, okQ = S.players.size >= 4;
     var modes = h('div', { class: 'gmodes' });
     ['g', 's'].forEach(function (m) {
@@ -3155,7 +3177,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     S.predBusy = false; renderView();
   }
   function viewPredict() {
-    var wk = weekKey(), me = devId(), mine = null, box = h('section', { class: 'card panel' }, h('h2', null, '🎯 গোলদাতা প্রেডিক্ট'),
+    var wk = weekKey(), me = devId(), mine = null, box = h('section', { class: 'card panel' }, h('h2', null, '🔮 ক্রিস্টাল বল'),
       h('p', { class: 'muted small' }, 'এই সপ্তাহে (' + rangeLabel('week', 0) + ') কে সবচেয়ে বেশি গোল করবে? একবার দিলে বদলানো যাবে না। সপ্তাহ শেষে ঠিক হলে ১ পয়েন্ট!'));
     if (S.predErr) { box.append(h('p', { class: 'notice' }, 'প্রেডিক্ট এখনো চালু হয়নি। অ্যাডমিন Firestore rules আপডেট করলে চালু হবে।')); return box; }
     S.preds.forEach(function (x) { if (x.id === wk + '_' + me) mine = x; });
@@ -3322,15 +3344,28 @@ h2,.home-section-head h2{letter-spacing:.02em}
   }
 
   function funSeg() {
-    var seg = h('div', { class: 'seg funseg', role: 'group', 'aria-label': 'মজা' });
-    [['spin', '🎡 স্পিন'], ['pred', '🎯 প্রেডিক্ট'], ['guess', '🎮 গেম'], ['card', '🃏 কার্ড'], ['roast', '🔥 রোস্ট'], ['cmp', '⚔️ তুলনা']].forEach(function (x) {
-      seg.append(h('button', { 'aria-pressed': S.funTab === x[0] ? 'true' : 'false', onclick: function () { if (S.spin.busy) return; S.guess.run = false; S.funTab = x[0]; renderView(); } }, x[1]));
+    var seg = h('div', { class: 'arena-tiles', role: 'group', 'aria-label': 'অ্যারেনা' });
+    [['spin', '🎡', 'ভাগ্যচক্র', 'LUCK'], ['pred', '🔮', 'ক্রিস্টাল বল', 'PREDICT'], ['guess', '🕹️', 'চ্যালেঞ্জ', 'GAMES'], ['card', '🎴', 'কার্ড ভল্ট', 'VAULT'], ['roast', '🌶️', 'ঝাল মশলা', 'ROAST'], ['cmp', '🥊', 'মুখোমুখি', 'VERSUS']].forEach(function (x) {
+      seg.append(h('button', { class: 'at', 'aria-pressed': S.funTab === x[0] ? 'true' : 'false', onclick: function () { if (S.spin.busy) return; S.guess.run = false; S.funTab = x[0]; renderView(); } },
+        h('span', { class: 'at-e' }, x[1]), h('b', null, x[2]), h('i', null, x[3])));
     });
-    return h('div', { class: 'periodbar' }, seg);
+    return h('div', { class: 'arena-nav' }, seg);
+  }
+  function arenaHero() {
+    try {
+      var ids = sortedPlayers().map(function (e) { return e[0]; });
+      if (ids.length < 2 || !SPINS.length) return document.createDocumentFragment();
+      var d = new Date(), k = d.getFullYear() * 400 + d.getMonth() * 31 + d.getDate();
+      var id = ids[k % ids.length], p = S.players.get(id), q = SPINS[(k * 7) % SPINS.length];
+      return h('section', { class: 'arena-hero' },
+        h('span', { class: 'ah-k' }, '⚡ আজকের ডেয়ার'),
+        h('div', { class: 'ah-row' }, avatar(p, 54), h('div', null, h('b', { class: 'ah-n' }, p.name), h('p', null, q[0] + ' ' + q[1]))),
+        h('span', { class: 'ah-f' }, 'প্রতিদিন নতুন টার্গেট · নিচ থেকে খেলা বেছে নাও'));
+    } catch (e) { return document.createDocumentFragment(); }
   }
   function viewFun() {
     listenFun();
-    var root = h('div', { class: 'stack' }, funSeg());
+    var root = h('div', { class: 'stack' }, arenaHero(), funSeg());
     if (S.players.size < 2) { root.append(h('div', { class: 'card emptybox' }, h('h2', null, 'আরও প্লেয়ার লাগবে'), h('p', { class: 'muted' }, 'মজার সেকশন চালাতে অন্তত ২ জন প্লেয়ার যোগ করুন।'))); return root; }
     if (S.funTab === 'cmp') root.append(viewCompare());
     else if (S.funTab === 'roast') root.append(viewRoast());
@@ -3345,10 +3380,10 @@ h2,.home-section-head h2{letter-spacing:.02em}
     var ids = sortedPlayers().map(function (e) { return e[0]; });
     var names = ids.map(function (id) { return S.players.get(id).name; });
     var modeSeg = h('div', { class: 'seg kind', role: 'group', 'aria-label': 'প্রশ্নের ধরন' },
-      h('button', { 'aria-pressed': sp.mode === 'mystery' ? 'true' : 'false', onclick: function () { if (sp.busy) return; sp.mode = 'mystery'; sp.winner = null; renderView(); } }, '🎲 রহস্য প্রশ্ন'),
-      h('button', { 'aria-pressed': sp.mode === 'pick' ? 'true' : 'false', onclick: function () { if (sp.busy) return; sp.mode = 'pick'; sp.winner = null; renderView(); } }, '📝 নিজে বাছি'));
+      h('button', { 'aria-pressed': sp.mode === 'mystery' ? 'true' : 'false', onclick: function () { if (sp.busy) return; sp.mode = 'mystery'; sp.winner = null; renderView(); } }, '🔒 গোপন মিশন'),
+      h('button', { 'aria-pressed': sp.mode === 'pick' ? 'true' : 'false', onclick: function () { if (sp.busy) return; sp.mode = 'pick'; sp.winner = null; renderView(); } }, '🎯 আমার পছন্দ'));
     var head, sub;
-    if (sp.mode === 'mystery') { head = '🎲 রহস্য স্পিন'; sub = h('p', { class: 'muted small' }, 'প্রশ্নটা লুকানো! চাকা থামলে প্রশ্ন আর বিজয়ী একসাথে জানা যাবে। মোট ' + SPINS.length + 'টা প্রশ্নের একটা আসবে।'); }
+    if (sp.mode === 'mystery') { head = '🎡 ভাগ্যচক্র'; sub = h('p', { class: 'muted small' }, 'মিশনটা গোপন! চাকা থামলেই মিশন আর টার্গেট একসাথে প্রকাশ। মোট ' + SPINS.length + 'টা প্রশ্নের একটা আসবে।'); }
     else {
       head = SPINS[sp.pick][0] + ' ' + SPINS[sp.pick][1];
       var sel = h('select', { class: 'sel', 'aria-label': 'প্রশ্ন বাছুন', onchange: function (e) { sp.pick = +e.target.value; sp.winner = null; renderView(); } });
@@ -3359,7 +3394,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     var box = h('section', { class: 'card panel spinbox' },
       h('h2', null, head), modeSeg, sub,
       h('div', { class: 'wheelwrap' }, cv),
-      h('button', { class: 'btn block', id: 'spinBtn', disabled: sp.busy, onclick: function () { spinNow(ids); } }, sp.winner ? '🎡 আবার ঘোরান' : '🎡 চাকা ঘোরান'));
+      h('button', { class: 'btn block', id: 'spinBtn', disabled: sp.busy, onclick: function () { spinNow(ids); } }, sp.winner ? '⚡ আবার ভাগ্য ঘোরাও' : '⚡ ভাগ্য ঘোরাও'));
     setTimeout(function () { var c = $('#wheel'); if (c) drawWheel(c, names, sp.rot); }, 0);
     var root = h('div', { class: 'stack' }, box);
     if (sp.winner && S.players.has(sp.winner) && sp.cur) {
@@ -3394,7 +3429,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     });
     var verdict = sa === sb ? '🤝 দুজনেই সমান সমান!' : '🔥 ' + (sa > sb ? pa.name : pb.name) + ' এগিয়ে (' + Math.max(sa, sb) + '–' + Math.min(sa, sb) + ')';
     return h('section', { class: 'card panel' },
-      h('h2', null, '⚔️ কে এগিয়ে?'),
+      h('h2', null, '🥊 মুখোমুখি'),
       h('div', { class: 'cmphead' },
         h('div', { class: 'cmpside' }, avatar(pa, 72), sel('a'), ttlChip(c.a)),
         h('span', { class: 'vs' }, 'VS'),
@@ -4522,7 +4557,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
       });
     }
     nav.textContent = '';
-    var main = [['home', 'home', 'হোম'], ['board', 'trophy', 'র‍্যাঙ্কিং'], ['players', 'users', 'প্লেয়ার'], ['fun', 'spark', 'মজা']];
+    var main = [['home', 'home', 'হোম'], ['board', 'trophy', 'র‍্যাঙ্কিং'], ['players', 'users', 'প্লেয়ার'], ['fun', 'spark', 'অ্যারেনা']];
     main.forEach(function (x) {
       nav.append(h('button', { type: 'button', 'aria-current': S.tab === x[0] ? 'page' : null, onclick: function () { hpCloseMore(); goTab(x[0]); } },
         h('span', { class: 'bi', 'aria-hidden': 'true' }, icoEl(x[1], 24)), x[2]));

@@ -1668,15 +1668,6 @@ h2,.home-section-head h2{letter-spacing:.02em}
 .bmore button:last-child{margin-top:4px;border-top:1px solid rgba(255,255,255,.06)}
 @media(prefers-reduced-motion:reduce){.bmore,.bmore button{animation:none;opacity:1}}
 .bmore button{padding:8px 12px!important}.bmore{min-width:228px!important}
-
-/* ===== FX: page motion, skeletons ===== */
-#view.fx-page{animation:fxPage .42s cubic-bezier(.2,.9,.25,1)}
-@keyframes fxPage{from{opacity:0;transform:translateY(16px) scale(.99);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
-.fx-skel{display:grid;gap:12px;padding:6px 2px}
-.fx-skel i{display:block;height:74px;background:linear-gradient(100deg,rgba(255,255,255,.04) 30%,rgba(255,200,87,.13) 50%,rgba(255,255,255,.04) 70%) 0 0/250% 100%,rgba(255,255,255,.04);clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%);animation:fxSkel 1.3s linear infinite}
-.fx-skel i:nth-child(2){height:56px;opacity:.8}.fx-skel i:nth-child(3){height:56px;opacity:.6}
-@keyframes fxSkel{to{background-position:-150% 0,0 0}}
-@media(prefers-reduced-motion:reduce){#view.fx-page,.fx-skel i{animation:none!important;transition:none!important;transform:none!important}}
 </style>
 </head>
 <body>
@@ -6438,62 +6429,6 @@ h2,.home-section-head h2{letter-spacing:.02em}
     });
   }
   init();
-})();
-</script>
-<script>
-(function () {
-  'use strict';
-  var seen = {}, RM = false;
-  try { RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* ignore */ }
-  var CU = '.sb-cell b, .hx-big, .hx-ovr, .sl-goals b, .row .num, .pl-ovr b, .hp-score';
-  function fresh(key, ms) { var t = Date.now(); if (seen[key] && t - seen[key] < ms) return false; seen[key] = t; return true; }
-  function count(el) {
-    if (el.getAttribute('data-cu')) return; el.setAttribute('data-cu', '1');
-    var m = el.textContent.trim().match(/^(\d+)(%?)$/); if (!m) return;
-    var to = +m[1], suf = m[2]; if (to < 1 || to > 9999) return;
-    var par = el.parentElement, idx = par && par.parentElement ? Array.prototype.indexOf.call(par.parentElement.children, par) : 0;
-    if (!fresh('cu|' + el.className + '|' + (par && par.className) + '|' + idx + '|' + m[0], 90000)) return;
-    var dur = Math.min(1100, 380 + to * 14), st = null; el.textContent = '0' + suf;
-    function f(ts) { if (!st) st = ts; var p = Math.min(1, (ts - st) / dur), e = 1 - Math.pow(1 - p, 3); el.textContent = Math.round(to * e) + suf; if (p < 1) requestAnimationFrame(f); }
-    requestAnimationFrame(f);
-  }
-  function rows(par) {
-    if (par.getAttribute('data-fxr')) return; par.setAttribute('data-fxr', '1');
-    var rs = par.querySelectorAll(':scope > .row'); if (rs.length < 2) return;
-    if (!fresh('rw|' + par.className + '|' + rs.length + '|' + rs[0].textContent.slice(0, 24), 90000)) return;
-    Array.prototype.forEach.call(rs, function (r, i) { r.style.setProperty('--i', Math.min(i, 12)); r.classList.add('fx-row'); });
-  }
-  function holo(c) {
-    if (c.getAttribute('data-holo')) return; c.setAttribute('data-holo', '1');
-    function mv(ev) {
-      var r = c.getBoundingClientRect(), px = (ev.clientX - r.left) / r.width, py = (ev.clientY - r.top) / r.height;
-      c.classList.add('fx-live'); c.style.setProperty('--mx', (px * 100).toFixed(1) + '%'); c.style.setProperty('--my', (py * 100).toFixed(1) + '%');
-      c.style.setProperty('--ry', ((px - .5) * 16).toFixed(1) + 'deg'); c.style.setProperty('--rx', ((.5 - py) * 12).toFixed(1) + 'deg');
-    }
-    function rs() { c.classList.remove('fx-live'); c.style.setProperty('--rx', '0deg'); c.style.setProperty('--ry', '0deg'); }
-    c.addEventListener('pointermove', mv); c.addEventListener('pointerdown', mv); c.addEventListener('pointerup', rs); c.addEventListener('pointerleave', rs); c.addEventListener('pointercancel', rs);
-  }
-  function skel(el) {
-    if (el.getAttribute('data-sk') || el.children.length) return;
-    if (el.textContent.trim() !== 'Loading…') return;
-    el.setAttribute('data-sk', '1'); el.textContent = ''; var w = document.createElement('div'); w.className = 'fx-skel'; w.innerHTML = '<i></i><i></i><i></i>'; el.appendChild(w);
-  }
-  function scan(root) {
-    if (RM) return; var q = function (s) { return root.querySelectorAll ? root.querySelectorAll(s) : []; };
-    Array.prototype.forEach.call(q(CU), count);
-    Array.prototype.forEach.call(q('.home-empty, #view p.muted'), skel);
-  }
-  var lastTab = '', pgT = 0, view = null;
-  function tabKey() { var a = document.querySelectorAll('[aria-current="page"]'), s = ''; Array.prototype.forEach.call(a, function (e) { s += e.textContent.trim() + '|'; }); return s; }
-  function page() {
-    var k = tabKey(); if (k === lastTab) return; var first = !lastTab; lastTab = k; if (first || RM) return;
-    view = view || document.getElementById('view'); if (!view) return;
-    view.classList.remove('fx-page'); void view.offsetWidth; view.classList.add('fx-page'); clearTimeout(pgT); pgT = setTimeout(function () { view.classList.remove('fx-page'); }, 480);
-  }
-  var pend = false;
-  new MutationObserver(function () { if (pend) return; pend = true; requestAnimationFrame(function () { pend = false; page(); scan(document); }); })
-    .observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-current'] });
-  setTimeout(function () { lastTab = tabKey(); scan(document); }, 60);
 })();
 </script>
 </body>

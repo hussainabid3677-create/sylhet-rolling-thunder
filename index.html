@@ -3587,6 +3587,40 @@ h2,.home-section-head h2{letter-spacing:.02em}
     S.wins.forEach(function (w) { if (w.playerId === id && w.ts >= r.start && w.ts < r.end) { if (w.type === 'draw') draws++; else if (w.type === 'loss') losses++; else wins++; goals += w.goals || 0; } });
     return { wins: wins, draws: draws, losses: losses, goals: goals };
   }
+  var __cut = {}, __cutDb = null;
+  function srtHash(s) { var k = 5381; for (var i = 0; i < s.length; i += 7) k = ((k << 5) + k + s.charCodeAt(i)) | 0; return s.length + '_' + k; }
+  function cutIdb() {
+    if (__cutDb) return __cutDb;
+    __cutDb = new Promise(function (res) {
+      try { var rq = indexedDB.open('srt-cut', 1); rq.onupgradeneeded = function () { rq.result.createObjectStore('c'); }; rq.onsuccess = function () { res(rq.result); }; rq.onerror = function () { res(null); }; } catch (e) { res(null); }
+    });
+    return __cutDb;
+  }
+  async function cutGet(key) { try { var db = await cutIdb(); if (!db) return null; return await new Promise(function (res) { var q = db.transaction('c').objectStore('c').get(key); q.onsuccess = function () { res(q.result || null); }; q.onerror = function () { res(null); }; }); } catch (e) { return null; } }
+  async function cutPut(key, blob) { try { var db = await cutIdb(); if (!db) return; db.transaction('c', 'readwrite').objectStore('c').put(blob, key); } catch (e) { /* ignore */ } }
+  async function cutShrink(blob, max) {
+    var bm = await createImageBitmap(blob), s = Math.min(1, max / Math.max(bm.width, bm.height));
+    var cv = document.createElement('canvas'); cv.width = Math.round(bm.width * s); cv.height = Math.round(bm.height * s);
+    cv.getContext('2d').drawImage(bm, 0, 0, cv.width, cv.height);
+    return await new Promise(function (res) { cv.toBlob(function (b) { res(b || blob); }, 'image/jpeg', 0.92); });
+  }
+  /* Removes the real photo background in the browser (cached on the phone). Resolves to an object URL, or null when it fails. */
+  function srtCutout(src) {
+    if (!src) return Promise.resolve(null);
+    var key = srtHash(String(src));
+    if (__cut[key]) return __cut[key];
+    __cut[key] = (async function () {
+      try {
+        var cached = await cutGet(key); if (cached) return URL.createObjectURL(cached);
+        var b0 = await (await fetch(src)).blob(), small = await cutShrink(b0, 800);
+        var mod = await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm');
+        var out = await mod.removeBackground(small, { model: 'isnet_quint8', output: { format: 'image/png' } });
+        cutPut(key, out); return URL.createObjectURL(out);
+      } catch (e) { return null; }
+    })();
+    __cut[key].then(function (u) { if (!u) setTimeout(function () { delete __cut[key]; }, 60000); });
+    return __cut[key];
+  }
   var __pcN = 0;
   function passCard(p, id, rt) {
     var sq = squadOf(p), tier = tierOf(rt), s = statsFor(id, 'all'), u = 'pc' + (++__pcN);
@@ -3600,7 +3634,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     o += '<mask id="' + u + 'm"><rect x="32" y="0" width="68" height="120" fill="url(#' + u + 'f)"/></mask></defs>';
     o += '<path d="' + P + '" fill="url(#' + u + 'g)"/><g clip-path="url(#' + u + 'c)">';
     for (var r = 14, i = 0; r < 110; r += 6.5, i++) o += '<circle cx="68" cy="42" r="' + r + '" fill="none" stroke="' + (i % 3 === 1 ? 'rgba(244,205,100,.55)' : 'rgba(255,255,255,.12)') + '" stroke-width=".35"/>';
-    if (p.photo) o += '<image href="' + p.photo + '" x="32" y="3" width="65" height="115" preserveAspectRatio="xMidYMin slice" mask="url(#' + u + 'm)"/>';
+    if (p.photo) o += '<image data-ph="1" href="' + p.photo + '" x="32" y="3" width="65" height="115" preserveAspectRatio="xMidYMin slice" mask="url(#' + u + 'm)"/>';
     else o += '<text x="66" y="70" text-anchor="middle" font-size="50" font-weight="900" fill="rgba(255,255,255,.2)">' + initial(p.name) + '</text>';
     o += '</g><path d="M3 66L10 71L3 76Z" fill="#fff"/>';
     o += '<circle cx="17" cy="17" r="11.3" fill="#fff"/><clipPath id="' + u + 'l"><circle cx="17" cy="17" r="10.4"/></clipPath><rect x="6" y="6" width="22" height="22" fill="#000" clip-path="url(#' + u + 'l)"/><image href="logo.webp" x="6.6" y="6.6" width="20.8" height="20.8" clip-path="url(#' + u + 'l)"/>';
@@ -3613,7 +3647,12 @@ h2,.home-section-head h2{letter-spacing:.02em}
     var cells = [['MATCHES', mt], ['WINS', s.wins], ['DRAWS', s.draws], ['GOALS', s.goals], ['WIN %', mt ? Math.round(s.wins * 100 / mt) + '%' : '0%'], ['VALUE', mv]];
     cells.forEach(function (c, k) { var cx = 6 + 88 / 6 * (k + .5), v = String(c[1]); o += '<text x="' + cx.toFixed(1) + '" y="129.6" text-anchor="middle" font-size="' + (v.length > 4 ? 3.9 : 4.6) + '" font-weight="900" fill="#12296B">' + v + '</text><text x="' + cx.toFixed(1) + '" y="132.7" text-anchor="middle" font-size="1.9" font-weight="700" fill="#7A808C" letter-spacing=".25">' + c[0] + '</text>'; });
     o += '<path d="M0 134.5L0 142L30 142Z" fill="#E0242B"/><rect x="62" y="134.6" width="34" height="6.4" fill="#fff" stroke="#12296B" stroke-width=".5"/><text x="79" y="138.9" text-anchor="middle" font-size="3.3" font-weight="900" fill="#12296B" letter-spacing=".5">SRT · THUNDER</text></svg>';
-    var box = h('section', { class: 'pc sq-' + sq }); box.innerHTML = o; return box;
+    var box = h('section', { class: 'pc sq-' + sq }); box.innerHTML = o;
+    if (p.photo) srtCutout(p.photo).then(function (u) {
+      var im = box.querySelector('image[data-ph]'); if (!u || !im) return;
+      im.removeAttribute('mask'); im.setAttribute('href', u); im.setAttribute('x', '18'); im.setAttribute('width', '82'); im.setAttribute('y', '3'); im.setAttribute('height', '111');
+    });
+    return box;
   }
   function renderSheet() {
     var sh = $('#sheet');
@@ -3949,12 +3988,13 @@ h2,.home-section-head h2{letter-spacing:.02em}
     for (var r = 14, i = 0; r < 110; r += 6.5, i++) { x.beginPath(); x.arc(68, 42, r, 0, 7); x.lineWidth = 0.35; x.strokeStyle = i % 3 === 1 ? 'rgba(244,205,100,.55)' : 'rgba(255,255,255,.12)'; x.stroke(); }
     if (F.photo) {
       try {
-        var im = await loadImg(F.photo), PW = Math.round(65 * k), PH = Math.round(115 * k);
+        var cu = null; try { cu = await Promise.race([srtCutout(F.photo), new Promise(function (r) { setTimeout(function () { r(null); }, 45000); })]); } catch (e0) { cu = null; }
+        var im = await loadImg(cu || F.photo), bx = cu ? 18 : 32, bw = cu ? 82 : 65, PW = Math.round(bw * k), PH = Math.round(111 * k);
         var oc = document.createElement('canvas'); oc.width = PW; oc.height = PH; var oc2 = oc.getContext('2d');
         var s = Math.max(PW / im.width, PH / im.height), dw = im.width * s, dh = im.height * s;
         oc2.drawImage(im, (PW - dw) / 2, 0, dw, dh);
-        oc2.globalCompositeOperation = 'destination-in'; var mg = oc2.createLinearGradient(0, 0, PW * 0.16, 0); mg.addColorStop(0, 'rgba(0,0,0,0)'); mg.addColorStop(1, '#000'); oc2.fillStyle = mg; oc2.fillRect(0, 0, PW, PH);
-        x.drawImage(oc, 32, 3, 65, 115);
+        if (!cu) { oc2.globalCompositeOperation = 'destination-in'; var mg = oc2.createLinearGradient(0, 0, PW * 0.16, 0); mg.addColorStop(0, 'rgba(0,0,0,0)'); mg.addColorStop(1, '#000'); oc2.fillStyle = mg; oc2.fillRect(0, 0, PW, PH); }
+        x.drawImage(oc, bx, 3, bw, 111);
       } catch (e) { /* skip photo */ }
     }
     x.restore();

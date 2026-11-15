@@ -1668,6 +1668,29 @@ h2,.home-section-head h2{letter-spacing:.02em}
 .bmore button:last-child{margin-top:4px;border-top:1px solid rgba(255,255,255,.06)}
 @media(prefers-reduced-motion:reduce){.bmore,.bmore button{animation:none;opacity:1}}
 .bmore button{padding:8px 12px!important}.bmore{min-width:228px!important}
+
+/* ===== Unified premium surfaces ===== */
+.card{position:relative;border:1px solid rgba(255,200,87,.2)!important;border-radius:0!important;background:linear-gradient(90deg,#FF7A3D,#FFC857 55%,transparent) top left/46% 2px no-repeat,linear-gradient(160deg,rgba(255,190,80,.06),rgba(255,255,255,.01) 40%),#100D0B!important;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));box-shadow:none!important}
+.card:hover{border-color:rgba(255,200,87,.34)!important}
+.panel{background:linear-gradient(90deg,#FF7A3D,#FFC857 55%,transparent) top left/46% 2px no-repeat,linear-gradient(160deg,rgba(255,190,80,.07),rgba(255,255,255,.015) 40%),#0F0C0A!important}
+
+/* ===== Gold-foil typography ===== */
+.cardhead .h3,.panel>h2,.sl-head h3,.home-section-head h2,.hp-h,.srt-h,.hico-title{background:linear-gradient(180deg,#FFF6CF 0%,#F8CE6B 52%,#C98A2C 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.hx-ovr,.hx-big,.pl-ovr b,.hp-score,.goalnum{background:linear-gradient(180deg,#FFF6CF 0%,#F8CE6B 55%,#D79A35 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.panel>h2 .hico,.cardhead .h3 .hico{-webkit-text-fill-color:initial}
+.sl-k,.eyebrow,.fieldlbl{letter-spacing:.22em!important}
+
+/* ===== Line-icon bolts instead of emoji ===== */
+.brand h1:before,.brand h1:after,.home-section-head h2:before,.bnav button[aria-current="page"]:before,.quick-card:after,.srt-foot b.bolt{content:""!important;display:inline-block;width:.52em;height:.72em;font-size:inherit;background:linear-gradient(180deg,#FFD27A,#FF6B2C)!important;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M13 3 5 13.5h6L10 21l9-11h-6z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M13 3 5 13.5h6L10 21l9-11h-6z'/%3E%3C/svg%3E") center/contain no-repeat;-webkit-text-fill-color:initial;filter:drop-shadow(0 0 5px rgba(255,107,44,.55))}
+.brand h1:before,.brand h1:after{margin:0 .35em;vertical-align:.02em}
+.home-section-head h2:before{margin-right:.4em;vertical-align:-.02em}
+.bnav button[aria-current="page"]:before{position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:11px;height:15px}
+.quick-card:after{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:11px;height:15px;opacity:.85}
+.srt-foot b.bolt{width:.6em;height:.85em;vertical-align:-.1em;margin:0 .3em}
+.seg.kind button .hico{justify-content:center;gap:8px}.seg.kind button .hico .ico{color:inherit!important}
+.hp-badge .ico{vertical-align:-2px;margin-right:2px}
+.hp-crown .ico{color:#FFD27A}
+.trophies.hico .ico{color:#FFD27A}
 </style>
 </head>
 <body>
@@ -1687,7 +1710,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
   </header>
   <div class="install" id="install" hidden></div>
   <main id="view" aria-live="polite"></main>
-  <p class="srt-foot"><b>⚡</b> Sylhet Rolling Thunder · SRT <b>⚡</b></p>
+  <p class="srt-foot"><b class="bolt"></b> Sylhet Rolling Thunder · SRT <b class="bolt"></b></p>
 </div>
 <div class="scrim" id="scrim" hidden>
   <div class="sheet" id="sheet" role="dialog" aria-modal="true" tabindex="-1"></div>
@@ -1993,7 +2016,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     tabs.push(['ballon', 'Golden Bolt']);
     tabs.push(['moments', 'Moments']);
     tabs.push(['team', 'Admin']);
-    tabs.push(['fun', '⚡ Arena']);
+    tabs.push(['fun', 'Arena']);
     tabs.forEach(function (x) {
       var b = h('button', {
         class: 'tab' + (x[0] === 'fun' ? ' funtab' : ''), role: 'tab', 'aria-selected': S.tab === x[0] ? 'true' : 'false',
@@ -2139,7 +2162,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
         return h('button', { 'aria-pressed': per === x[0] ? 'true' : 'false', onclick: function () { S.dreamPer = x[0]; renderView(); } }, x[1]);
       }));
     var card = h('section', { class: 'card panel dream' },
-      h('h2', null, '⭐ Dream XI'),
+      h('h2', null, hIco('star', 'Dream XI')),
       h('p', { class: 'muted small' }, 'Generated automatically from the best performers. Updates every week, nobody has to do anything.'),
       seg, h('p', { class: 'muted small' }, d.bn));
     if (!d.total) { card.append(h('p', { class: 'notice' }, per === 'all' ? 'No matches recorded yet.' : 'No match has been recorded this week yet. Teams can be built once matches are added.')); return card; }
@@ -2166,7 +2189,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     });
     var bar = h('div', { class: 'dx-bar' }, h('span', { class: 'dx-chip' }, 'FORMATION ', h('b', null, '4-3-3')), h('span', { class: 'dx-chip' }, 'TEAM OVR ', h('b', null, String(cnt ? Math.round(tot / cnt) : '–'))));
     card.append(bar, pitch, h('p', { class: 'muted small' }, 'Line-up 4-3-3. Players with more goals are up front. C = Captain (best performer), W = Wins, G = Goals, right circle = OVR rating.'),
-      h('button', { class: 'btn lime block', onclick: function () { openDreamCard(per); } }, '🖼️ Create share card'));
+      h('button', { class: 'btn lime block', onclick: function () { openDreamCard(per); } }, hIco('image', 'Create share card')));
     return card;
   }
   function openDreamCard(per) {
@@ -2202,7 +2225,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
         t.append(h('button', { class: 'item hrow', onclick: function () { openSheet('profile', r.id); } },
           h('span', { class: 'trank' }, String(rank)), avatar(r.p, 40),
           h('div', { class: 'grow' }, h('strong', null, r.p.name)),
-          h('span', { class: 'trophies' }, '🏆 ' + r.n)));
+          h('span', { class: 'trophies hico' }, icoEl('trophy', 14), String(r.n))));
       });
       root.append(t);
     }
@@ -2297,9 +2320,9 @@ h2,.home-section-head h2{letter-spacing:.02em}
     var dateIn = h('input', { type: 'date', id: 'winDate', value: S.date, max: dateStr(new Date()), 'aria-label': 'Date',
       onchange: function (ev) { if (ev.target.value) S.date = ev.target.value; } });
     var kindSeg = h('div', { class: 'seg kind', role: 'group', 'aria-label': 'Match result' },
-      h('button', { 'aria-pressed': S.kind === 'win' ? 'true' : 'false', onclick: function () { S.kind = 'win'; renderView(); } }, '🏆 Win'),
-      h('button', { 'aria-pressed': S.kind === 'draw' ? 'true' : 'false', onclick: function () { S.kind = 'draw'; renderView(); } }, '🤝 Draw'),
-      h('button', { 'aria-pressed': S.kind === 'loss' ? 'true' : 'false', onclick: function () { S.kind = 'loss'; renderView(); } }, '❌ Loss'));
+      h('button', { 'aria-pressed': S.kind === 'win' ? 'true' : 'false', onclick: function () { S.kind = 'win'; renderView(); } }, hIco('trophy', 'Win')),
+      h('button', { 'aria-pressed': S.kind === 'draw' ? 'true' : 'false', onclick: function () { S.kind = 'draw'; renderView(); } }, hIco('equal', 'Draw')),
+      h('button', { 'aria-pressed': S.kind === 'loss' ? 'true' : 'false', onclick: function () { S.kind = 'loss'; renderView(); } }, hIco('x', 'Loss')));
     var form = h('section', { class: 'card panel' },
       h('h2', null, S.kind === 'draw' ? 'Whose match was a draw?' : S.kind === 'loss' ? 'Who lost?' : 'Who won?'), kindSeg, sbox, cnt, picked, chips,
       h('div', null, h('span', { class: 'fieldlbl' }, 'Goals'),
@@ -2362,7 +2385,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     var e = S.ed;
     function again() { renderSheet(); }
     var kindSeg = h('div', { class: 'seg kind', role: 'group', 'aria-label': 'Match result' },
-      [['win', '🏆 Win'], ['draw', '🤝 Draw'], ['loss', '❌ Loss']].map(function (k) {
+      [['win', 'Win'], ['draw', 'Draw'], ['loss', 'Loss']].map(function (k) {
         return h('button', { 'aria-pressed': e.kind === k[0] ? 'true' : 'false', onclick: function () { e.kind = k[0]; again(); } }, k[1]);
       }));
     var sel = h('select', { id: 'edPlayer', onchange: function (ev) { e.pid = ev.target.value; } },
@@ -4601,7 +4624,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     wrap.append(h('div', { class: 'actions' },
       h('button', { class: 'btn', disabled: !c.blob || c.loading, onclick: saveCard }, icon('down'), 'Download PNG'),
       canShareFiles() ? h('button', { class: 'btn ghost', disabled: !c.blob || c.loading, onclick: shareCard }, 'Share') : null,
-      (c.kind === 'nsign' || (c.kind === 'player' && c.leaders.length)) ? h('button', { class: 'btn ghost', onclick: copyCaption }, '📋 Copy caption') : null));
+      (c.kind === 'nsign' || (c.kind === 'player' && c.leaders.length)) ? h('button', { class: 'btn ghost', onclick: copyCaption }, hIco('clip', 'Copy caption')) : null));
     wrap.append(h('p', { class: 'muted small' }, 'If the download doesn\'t start, press and hold the image to save it, then post on Facebook or Instagram.'));
     return wrap;
   }
@@ -4705,7 +4728,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     [1, 0, 2].forEach(function (i) {
       var x = top[i], t = titleFor(x.id);
       wrap.append(h('button', { type: 'button', class: 'hp-pod-col r' + (i + 1), onclick: function () { openSheet('profile', x.id); } },
-        i === 0 ? h('span', { class: 'hp-crown', 'aria-hidden': 'true' }, '👑') : null,
+        i === 0 ? h('span', { class: 'hp-crown', 'aria-hidden': 'true' }, icoEl('crown', 16)) : null,
         avatar(x.p, 0), h('strong', null, x.p.name),
         h('span', { class: 'hp-pod-ovr' }, String(ratingFor(x.id)) + ' OVR'),
         null,
@@ -4831,10 +4854,10 @@ h2,.home-section-head h2{letter-spacing:.02em}
     });
     if (!best) return null;
     var p = S.players.get(best.playerId), g = Number(best.goals || 0), t = titleFor(best.playerId), tags = [];
-    if (g >= 3) tags.push('⚽ Hat-trick');
-    tags.push('🏆 ' + g + ' goals');
+    if (g >= 3) tags.push('Hat-trick');
+    tags.push(g + ' goals');
     return h('section', { class: 'hp-feat' },
-      h('div', { class: 'hp-feat-top' }, h('span', { class: 'hp-badge' }, '🔥 MATCH OF THE WEEK'),
+      h('div', { class: 'hp-feat-top' }, h('span', { class: 'hp-badge' }, icoEl('bolt', 14), ' MATCH OF THE WEEK'),
         h('small', null, new Date(best.ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }))),
       h('button', { type: 'button', class: 'hp-feat-mid', onclick: function () { openSheet('profile', best.playerId); } },
         hpRingAv(p, 76),
@@ -4878,7 +4901,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     var sec = h('section', { class: 'ac-panel', 'aria-label': 'SRT Admin Panel' },
       h('div', { class: 'ac-head' },
         h('div', null, h('p', { class: 'ac-kick' }, 'SYLHET ROLLING THUNDER'), h('h2', null, 'SRT COMMAND CENTRE'), h('p', { class: 'muted small' }, 'Those who run the club')),
-        S.canWrite ? h('button', { class: 'btn sm', onclick: function () { S.acDraft = acBlank(); openSheet('acnew'); } }, '➕ Add') : null));
+        S.canWrite ? h('button', { class: 'btn sm', onclick: function () { S.acDraft = acBlank(); openSheet('acnew'); } }, hIco('plus', 'Add')) : null));
     if (S.canWrite && S.acErr) sec.append(h('div', { class: 'notice' }, 'To save the admin card, add the new part (adminCards) of the firestore-rules.txt file in Firebase Console → Firestore → Rules and Publish.'));
     if (!list.length) { sec.append(h('div', { class: 'home-empty' }, S.canWrite ? 'No admins have been added yet. Tap the button above.' : 'Coming soon.')); return h('div', { class: 'stack' }, sec); }
     var grid = h('div', { class: 'ac-grid' });
@@ -5048,7 +5071,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     }
     clearInterval(window._hpT);
     window._hpT = setInterval(tick, 3200);
-    var line = hlead.length ? h('p', { class: 'hp-leadline' }, '👑 This week\'s leader: ', h('b', null, hlead.map(function (r) { return r.p.name; }).join(' & ')), ' · ' + top.wins + ' wins · ' + top.goals + ' goals') : null;
+    var line = hlead.length ? h('p', { class: 'hp-leadline' }, icoEl('crown', 14), ' This week\'s leader: ', h('b', null, hlead.map(function (r) { return r.p.name; }).join(' & ')), ' · ' + top.wins + ' wins · ' + top.goals + ' goals') : null;
     return h('section', { class: 'home-hero' }, h('span', { class: 'hp-shine', 'aria-hidden': 'true' }), hpLive(),
       h('div', { class: 'home-kicker' }, 'SYLHET ROLLING THUNDER • OUR SQUAD', count),
       box, prog, line,
@@ -5136,7 +5159,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     var board = h('section', { class: 'sb' },
       h('div', { class: 'sb-top' }, h('span', { class: 'sb-live' }, '● MONTH TALLY'), h('span', null, 'SRT · ' + mname)),
       h('div', { class: 'sb-row' }, cell(tw, 'WIN', 'w'), h('i', null, ':'), cell(td, 'DRAW', 'd'), h('i', null, ':'), cell(tl, 'LOSS', 'l')),
-      h('div', { class: 'sb-foot' }, h('span', null, '⚽ ' + tg + ' GOALS'), h('span', null, tot ? Math.round(tw * 100 / tot) + '% WIN RATE' : 'NO MATCH YET'), h('span', null, tot + ' MATCHES')),
+      h('div', { class: 'sb-foot' }, h('span', { class: 'hico' }, icoEl('ball', 13), tg + ' GOALS'), h('span', null, tot ? Math.round(tw * 100 / tot) + '% WIN RATE' : 'NO MATCH YET'), h('span', null, tot + ' MATCHES')),
       h('div', { class: 'sb-prev' }, 'LAST MONTH  ' + pw + 'W · ' + pd + 'D · ' + pl + 'L  — resets on the 1st of every month'));
     var items = [['medal', 'Rank', 'board'], ['users', 'Squad', 'players'], ['market', 'Market', 'market'], ['fantasy', 'Fantasy', 'fantasy'], ['feed', 'Feed', 'feed'], ['trophy', 'Cup', 'tournament'], ['crown', 'Bolt', 'ballon'], ['camera', 'Gallery', 'moments']];
     var rail = h('nav', { class: 'rail', 'aria-label': 'Quick menu' });
@@ -5376,6 +5399,10 @@ h2,.home-section-head h2{letter-spacing:.02em}
     up: '<path d="M5 15l7-7 7 7"/>',
     down: '<path d="M5 9l7 7 7-7"/>',
     wifi: '<path d="M3 9a14 14 0 0 1 18 0M6 12.5a9.5 9.5 0 0 1 12 0M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="19" r=".8"/><path d="M4 4l16 16"/>',
+    equal: '<path d="M5 9h14M5 15h14"/>',
+    x: '<path d="M6 6l12 12M18 6 6 18"/>',
+    image: '<rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4 4 3 3-2 4 3"/>',
+    clip: '<rect x="6" y="5" width="12" height="15" rx="2"/><path d="M9 5V3.5h6V5M9 11h6M9 15h4"/>',
     dot: '<circle cx="12" cy="12" r="3"/>'
   };
   function icoEl(n, sz) {

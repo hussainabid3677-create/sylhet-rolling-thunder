@@ -26,8 +26,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Saira+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=Saira:ital,wght@1,900&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Saira+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=Saira:ital,wght@1,900&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap"></noscript>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Saira+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=Saira:ital,wght@1,900&family=Archivo+Black&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Saira+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=Saira:ital,wght@1,900&family=Archivo+Black&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap"></noscript>
 <script>try{if(localStorage.getItem('srt-theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
 <style>
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -3587,72 +3587,44 @@ h2,.home-section-head h2{letter-spacing:.02em}
     S.wins.forEach(function (w) { if (w.playerId === id && w.ts >= r.start && w.ts < r.end) { if (w.type === 'draw') draws++; else if (w.type === 'loss') losses++; else wins++; goals += w.goals || 0; } });
     return { wins: wins, draws: draws, losses: losses, goals: goals };
   }
-  var __cut = {}, __cutDb = null;
-  function srtHash(s) { var k = 5381; for (var i = 0; i < s.length; i += 7) k = ((k << 5) + k + s.charCodeAt(i)) | 0; return s.length + '_' + k; }
-  function cutIdb() {
-    if (__cutDb) return __cutDb;
-    __cutDb = new Promise(function (res) {
-      try { var rq = indexedDB.open('srt-cut', 1); rq.onupgradeneeded = function () { rq.result.createObjectStore('c'); }; rq.onsuccess = function () { res(rq.result); }; rq.onerror = function () { res(null); }; } catch (e) { res(null); }
-    });
-    return __cutDb;
-  }
-  async function cutGet(key) { try { var db = await cutIdb(); if (!db) return null; return await new Promise(function (res) { var q = db.transaction('c').objectStore('c').get(key); q.onsuccess = function () { res(q.result || null); }; q.onerror = function () { res(null); }; }); } catch (e) { return null; } }
-  async function cutPut(key, blob) { try { var db = await cutIdb(); if (!db) return; db.transaction('c', 'readwrite').objectStore('c').put(blob, key); } catch (e) { /* ignore */ } }
-  async function cutShrink(blob, max) {
-    var bm = await createImageBitmap(blob), s = Math.min(1, max / Math.max(bm.width, bm.height));
-    var cv = document.createElement('canvas'); cv.width = Math.round(bm.width * s); cv.height = Math.round(bm.height * s);
-    cv.getContext('2d').drawImage(bm, 0, 0, cv.width, cv.height);
-    return await new Promise(function (res) { cv.toBlob(function (b) { res(b || blob); }, 'image/jpeg', 0.92); });
-  }
-  /* Removes the real photo background in the browser (cached on the phone). Resolves to an object URL, or null when it fails. */
-  function srtCutout(src) {
-    if (!src) return Promise.resolve(null);
-    var key = srtHash(String(src));
-    if (__cut[key]) return __cut[key];
-    __cut[key] = (async function () {
-      try {
-        var cached = await cutGet(key); if (cached) return URL.createObjectURL(cached);
-        var b0 = await (await fetch(src)).blob(), small = await cutShrink(b0, 800);
-        var mod = await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm');
-        var out = await mod.removeBackground(small, { model: 'isnet_quint8', output: { format: 'image/png' } });
-        cutPut(key, out); return URL.createObjectURL(out);
-      } catch (e) { return null; }
-    })();
-    __cut[key].then(function (u) { if (!u) setTimeout(function () { delete __cut[key]; }, 60000); });
-    return __cut[key];
-  }
   var __pcN = 0;
+  var PC_ICO = [['f', 'M0 -2.2L2.5 1.8L-2.5 1.8Z'], ['s', 'M-2.4 -1.1H2.4M-2.4 1.1H2.4'], ['s', 'M-2 -2V2M0 -2V2M2 -2V2']];
   function passCard(p, id, rt) {
-    var sq = squadOf(p), tier = tierOf(rt), s = statsFor(id, 'all'), u = 'pc' + (++__pcN);
+    var sq = squadOf(p), tier = tierOf(rt), s = statsFor(id, 'all'), u = 'pc' + (++__pcN), BL = '#2FA4F0', DK = '#1B2A38';
     var mt = s.wins + s.draws + s.losses, mv = '–'; try { mv = mkFmt(mkInfo(id).v); } catch (e) { /* ignore */ }
-    var nm = String(p.name || '').toUpperCase(), nfs = Math.max(4, Math.min(11, 88 / (Math.max(6, nm.length) * 0.52)));
-    var SQC = { main: '#D8311A', academy: '#E8A317', youth: '#1FA86B' }[sq] || '#D8311A';
-    var P = 'M3 3H97V104Q55 114 3 98Z', o = '<svg viewBox="0 0 100 142" preserveAspectRatio="xMidYMid meet" aria-hidden="true">';
-    o += '<defs><linearGradient id="' + u + 'g" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#17934A"/><stop offset="1" stop-color="#0A5A2C"/></linearGradient>';
-    o += '<clipPath id="' + u + 'c"><path d="' + P + '"/></clipPath>';
-    o += '<linearGradient id="' + u + 'f"><stop offset="0" stop-color="#000"/><stop offset=".16" stop-color="#fff"/></linearGradient>';
-    o += '<mask id="' + u + 'm"><rect x="32" y="0" width="68" height="120" fill="url(#' + u + 'f)"/></mask></defs>';
-    o += '<path d="' + P + '" fill="url(#' + u + 'g)"/><g clip-path="url(#' + u + 'c)">';
-    for (var r = 14, i = 0; r < 110; r += 6.5, i++) o += '<circle cx="68" cy="42" r="' + r + '" fill="none" stroke="' + (i % 3 === 1 ? 'rgba(244,205,100,.55)' : 'rgba(255,255,255,.12)') + '" stroke-width=".35"/>';
-    if (p.photo) o += '<image data-ph="1" href="' + p.photo + '" x="32" y="3" width="65" height="115" preserveAspectRatio="xMidYMin slice" mask="url(#' + u + 'm)"/>';
-    else o += '<text x="66" y="70" text-anchor="middle" font-size="50" font-weight="900" fill="rgba(255,255,255,.2)">' + initial(p.name) + '</text>';
-    o += '</g><path d="M3 66L10 71L3 76Z" fill="#fff"/>';
-    o += '<circle cx="17" cy="17" r="11.3" fill="#fff"/><clipPath id="' + u + 'l"><circle cx="17" cy="17" r="10.4"/></clipPath><rect x="6" y="6" width="22" height="22" fill="#000" clip-path="url(#' + u + 'l)"/><image href="logo.webp" x="6.6" y="6.6" width="20.8" height="20.8" clip-path="url(#' + u + 'l)"/>';
-    o += '<circle cx="17" cy="39.5" r="8.6" fill="#fff"/><circle cx="17" cy="39.5" r="7.1" fill="' + SQC + '"/><text x="17" y="40.9" text-anchor="middle" font-size="3.5" font-weight="900" fill="#fff" letter-spacing=".3">' + squadCode(sq) + '</text>';
-    o += '<rect x="8" y="52" width="18" height="9" rx="1.2" fill="#0E1016" stroke="#fff" stroke-width=".7"/><text x="17" y="58.4" text-anchor="middle" font-size="5" font-weight="900" fill="#FFD36B" letter-spacing=".4">' + tier.n + '</text>';
-    o += '<circle cx="17" cy="97" r="9.8" fill="#fff"/><circle cx="17" cy="97" r="8.6" fill="none" stroke="#12296B" stroke-width="1"/><text x="17" y="93.4" text-anchor="middle" font-size="2.5" font-weight="700" fill="#12296B" letter-spacing=".3">OVR</text><text x="17" y="100.6" text-anchor="middle" font-size="7.6" font-weight="900" fill="#12296B">' + rt + '</text>';
-    o += '<text x="6" y="111" font-size="3.6" font-weight="700" fill="#5B6478" letter-spacing=".5">' + (p.number ? '#' + p.number + ' · ' : '') + tier.n + ' · ' + squadCode(sq) + '</text>';
-    o += '<text x="6" y="119.6" font-size="' + nfs.toFixed(2) + '" font-weight="900" fill="#12296B" letter-spacing=".4">' + nm.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</text>';
-    o += '<rect x="6" y="124.2" width="88" height=".35" fill="#DADDE4"/>';
-    var cells = [['MATCHES', mt], ['WINS', s.wins], ['DRAWS', s.draws], ['GOALS', s.goals], ['WIN %', mt ? Math.round(s.wins * 100 / mt) + '%' : '0%'], ['VALUE', mv]];
-    cells.forEach(function (c, k) { var cx = 6 + 88 / 6 * (k + .5), v = String(c[1]); o += '<text x="' + cx.toFixed(1) + '" y="129.6" text-anchor="middle" font-size="' + (v.length > 4 ? 3.9 : 4.6) + '" font-weight="900" fill="#12296B">' + v + '</text><text x="' + cx.toFixed(1) + '" y="132.7" text-anchor="middle" font-size="1.9" font-weight="700" fill="#7A808C" letter-spacing=".25">' + c[0] + '</text>'; });
-    o += '<path d="M0 134.5L0 142L30 142Z" fill="#E0242B"/><rect x="62" y="134.6" width="34" height="6.4" fill="#fff" stroke="#12296B" stroke-width=".5"/><text x="79" y="138.9" text-anchor="middle" font-size="3.3" font-weight="900" fill="#12296B" letter-spacing=".5">SRT · THUNDER</text></svg>';
-    var box = h('section', { class: 'pc sq-' + sq }); box.innerHTML = o;
-    if (p.photo) srtCutout(p.photo).then(function (u) {
-      var im = box.querySelector('image[data-ph]'); if (!u || !im) return;
-      im.removeAttribute('mask'); im.setAttribute('href', u); im.setAttribute('x', '18'); im.setAttribute('width', '82'); im.setAttribute('y', '3'); im.setAttribute('height', '111');
+    var parts = String(p.name || '').trim().toUpperCase().split(/\s+/), last = parts.pop() || '', first = parts.join(' ') || (tier.n + ' · ' + squadCode(sq));
+    var lfs = Math.max(3.6, Math.min(7.6, 44 / (Math.max(5, last.length) * 0.56)));
+    var esc = function (t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
+    var rows = [['GOALS', s.goals, 'ball'], ['WINS', s.wins, 1], ['DRAWS', s.draws, 2], ['MATCHES', mt, 3], ['WIN %', mt ? Math.round(s.wins * 100 / mt) + '%' : '0%', '%'], ['VALUE', mv, '£']];
+    var o = '<svg viewBox="0 0 100 142" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs>';
+    o += '<pattern id="' + u + 'd" width="1.8" height="1.8" patternUnits="userSpaceOnUse"><circle cx=".9" cy=".9" r=".42" fill="' + BL + '"/></pattern>';
+    o += '<pattern id="' + u + 'b" width="2.4" height="2.4" patternUnits="userSpaceOnUse"><circle cx="1.2" cy="1.2" r=".5" fill="rgba(255,255,255,.55)"/></pattern>';
+    o += '<filter id="' + u + 's" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.1" flood-color="#04274A" flood-opacity=".45"/></filter>';
+    o += '<clipPath id="' + u + 'p"><rect x="12" y="18" width="46" height="92" rx="1"/></clipPath><clipPath id="' + u + 'l"><circle cx="14" cy="117.5" r="5.6"/></clipPath><clipPath id="' + u + 'k"><circle cx="85" cy="12" r="6.6"/></clipPath></defs>';
+    o += '<rect width="100" height="142" fill="' + BL + '"/>';
+    for (var i = 0; i < 6; i++) o += '<line x1="' + (i * 24 - 30) + '" y1="146" x2="' + (i * 24 + 50) + '" y2="-4" stroke="rgba(255,255,255,.88)" stroke-width="8"/>';
+    o += '<rect width="100" height="142" fill="url(#' + u + 'b)"/>';
+    o += '<g filter="url(#' + u + 's)"><rect x="6" y="12" width="88" height="118" rx="1.2" fill="#EDF3F9"/></g>';
+    o += '<rect x="10" y="16" width="50" height="96" fill="#F7FBFE"/><rect x="10" y="16" width="50" height="96" fill="url(#' + u + 'd)"/><rect x="10" y="16" width="80" height="96" fill="none" stroke="' + BL + '" stroke-width=".7"/>';
+    o += '<rect x="11.3" y="17.3" width="48.4" height="94.4" fill="none" stroke="#fff" stroke-width="1.6"/>';
+    if (p.photo) o += '<image href="' + p.photo + '" x="12" y="18" width="46" height="92" preserveAspectRatio="xMidYMin slice" clip-path="url(#' + u + 'p)"/>';
+    else o += '<rect x="12" y="18" width="46" height="92" fill="' + BL + '"/><text x="35" y="78" text-anchor="middle" font-size="40" font-weight="900" fill="rgba(255,255,255,.85)">' + esc(initial(p.name)) + '</text>';
+    o += '<rect x="62" y="22" width="26" height="6.4" fill="' + BL + '"/><text x="75" y="26.6" text-anchor="middle" font-size="3" font-weight="800" fill="#fff" letter-spacing=".35">' + esc(tier.n + ' · ' + squadCode(sq)) + '</text>';
+    rows.forEach(function (r, k) {
+      var y0 = 30.5 + k * 12.6, cy = y0 + 6, v = String(r[1]), ic = '';
+      ic += '<circle cx="67" cy="' + cy + '" r="4" fill="none" stroke="' + BL + '" stroke-width=".6"/>';
+      if (r[2] === 'ball') ic += '<g transform="translate(67 ' + cy + ')"><circle r="2.5" fill="none" stroke="' + BL + '" stroke-width=".55"/><path d="M0 -1.2L1.15 -.35L.7 .95L-.7 .95L-1.15 -.35Z" fill="' + BL + '"/></g>';
+      else if (r[2] === '%' || r[2] === '£') ic += '<text x="67" y="' + (cy + 1.5) + '" text-anchor="middle" font-size="4.6" font-weight="800" fill="' + BL + '">' + r[2] + '</text>';
+      else ic += '<path transform="translate(67 ' + cy + ')" d="' + PC_ICO[r[2] - 1][1] + '" ' + (PC_ICO[r[2] - 1][0] === 'f' ? 'fill="' + BL + '"' : 'fill="none" stroke="' + BL + '" stroke-width=".7" stroke-linecap="round"') + '/>';
+      o += ic + '<text x="73.5" y="' + (y0 + 7.6) + '" font-size="' + (v.length > 3 ? 5.4 : 7) + '" font-weight="800" fill="' + DK + '">' + esc(v) + '</text><text x="73.5" y="' + (y0 + 10.6) + '" font-size="2.2" font-weight="700" fill="#4B6479" letter-spacing=".4">' + r[0] + '</text><rect x="62" y="' + (y0 + 12) + '" width="26" height=".45" fill="' + BL + '"/>';
     });
-    return box;
+    o += '<g filter="url(#' + u + 's)"><rect x="6" y="108" width="88" height="20" fill="#F8FBFE"/></g><rect x="6" y="108" width="88" height="20" fill="#F8FBFE"/>';
+    o += '<circle cx="14" cy="117.5" r="6.2" fill="#fff" stroke="#D6E3EE" stroke-width=".4"/><rect x="8" y="111.5" width="12" height="12" fill="#000" clip-path="url(#' + u + 'l)"/><image href="logo.webp" x="8.4" y="111.9" width="11.2" height="11.2" clip-path="url(#' + u + 'l)"/>';
+    o += '<text x="24" y="114.4" font-size="3.3" font-weight="600" fill="' + DK + '" letter-spacing=".3">' + esc(first) + '</text><text x="24" y="122.6" font-size="' + lfs.toFixed(2) + '" font-weight="800" fill="' + DK + '">' + esc(last) + '</text>';
+    o += '<text x="90" y="113.2" text-anchor="end" font-size="2.6" font-weight="700" fill="#4B6479" letter-spacing=".5">OVR</text><text x="90" y="124.6" text-anchor="end" font-size="12.5" font-weight="900" fill="' + DK + '">' + rt + '</text>';
+    o += '<rect x="12" y="131.2" width="76" height="7" rx="3.5" fill="#0A5E9E"/><text x="50" y="136.2" text-anchor="middle" font-size="3.3" font-weight="800" fill="#fff" letter-spacing=".9">SYLHET ROLLING THUNDER' + (p.number ? ' · #' + esc(p.number) : '') + '</text>';
+    o += '<rect x="76" y="3" width="18" height="18" fill="' + BL + '" stroke="#fff" stroke-width="1.1"/><circle cx="85" cy="12" r="7.2" fill="#fff"/><rect x="78" y="5" width="14" height="14" fill="#000" clip-path="url(#' + u + 'k)"/><image href="logo.webp" x="78.4" y="5.4" width="13.2" height="13.2" clip-path="url(#' + u + 'k)"/></svg>';
+    var box = h('section', { class: 'pc sq-' + sq }); box.innerHTML = o; return box;
   }
   function renderSheet() {
     var sh = $('#sheet');
@@ -3808,7 +3780,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     });
   }
   function ensureFonts() {
-    var f = ['800 80px "Saira Condensed"', '700 40px "Saira Condensed"', '800 60px "Barlow Condensed"', 'italic 900 60px Saira', '500 40px "Noto Sans Bengali"'];
+    var f = ['800 80px "Saira Condensed"', '700 40px "Saira Condensed"', '800 60px "Barlow Condensed"', 'italic 900 60px Saira', '400 60px "Archivo Black"', '500 40px "Noto Sans Bengali"'];
     return Promise.all(f.map(function (x) { return document.fonts.load(x, 'Aa Ab'); })).catch(function () { /* fallback fonts */ });
   }
   function rr(x, px, py, w, hh, r) {
@@ -3965,11 +3937,11 @@ h2,.home-section-head h2{letter-spacing:.02em}
     var NUM = '"Barlow Condensed","Saira Condensed","Arial Narrow",sans-serif';
     function sp(px) { if ('letterSpacing' in x) x.letterSpacing = px + 'px'; }
     var SQ = { MAIN: ['#D8311A', '#8E1A0D'], ACADEMY: ['#E8A317', '#9C6406'], YOUTH: ['#1FA86B', '#0B5E3A'] }[String(F.sqEn || '').split(' ')[0]] || ['#D8311A', '#8E1A0D'];
-    var bg = x.createLinearGradient(0, 0, W * 0.7, H); bg.addColorStop(0, '#06140C'); bg.addColorStop(0.5, '#0C2A19'); bg.addColorStop(1, '#050E09');
+    var bg = x.createLinearGradient(0, 0, W * 0.7, H); bg.addColorStop(0, '#06101C'); bg.addColorStop(0.5, '#0C2236'); bg.addColorStop(1, '#050B14');
     x.fillStyle = bg; x.fillRect(0, 0, W, H);
     x.strokeStyle = 'rgba(255,255,255,0.03)'; x.lineWidth = 3;
     for (var lx = -H; lx < W; lx += 90) { x.beginPath(); x.moveTo(lx, H); x.lineTo(lx + H * 0.6, 0); x.stroke(); }
-    var vg = x.createRadialGradient(W / 2, H * 0.45, 80, W / 2, H * 0.45, H * 0.7); vg.addColorStop(0, 'rgba(60,200,110,0.22)'); vg.addColorStop(1, 'rgba(0,0,0,0.45)');
+    var vg = x.createRadialGradient(W / 2, H * 0.45, 80, W / 2, H * 0.45, H * 0.7); vg.addColorStop(0, 'rgba(60,160,240,0.25)'); vg.addColorStop(1, 'rgba(0,0,0,0.45)');
     x.fillStyle = vg; x.fillRect(0, 0, W, H);
     var cw = story ? 940 : Math.min(860, (H - 120) / 1.42), k = cw / 100, ox = (W - cw) / 2, oy = (H - 142 * k) / 2 + (story ? 10 : 0);
     function X(v) { return ox + v * k; } function Y(v) { return oy + v * k; } function L(v) { return v * k; }
@@ -3978,122 +3950,98 @@ h2,.home-section-head h2{letter-spacing:.02em}
     function txt(s, cx, cy, size, wt, col, ls, al) { x.font = wt + ' ' + L(size) + 'px ' + NUM; x.fillStyle = col; x.textAlign = al || 'center'; x.textBaseline = 'middle'; sp(ls ? L(ls) : 0); x.fillText(s, cx, cy); sp(0); }
     if (story) { txt('SYLHET ROLLING THUNDER', W / 2, 150, 4.6, '800', '#FFB547', 1.2); txt('#SRT · THUNDER FAMILY', W / 2, H - 120, 3.6, '700', 'rgba(255,255,255,.75)', 1); }
     /* frame */
-    x.save(); x.shadowColor = 'rgba(0,0,0,0.65)'; x.shadowBlur = 60; x.shadowOffsetY = 24; rr(X(0), Y(0), L(100), L(142), L(4)); x.fillStyle = '#fff'; x.fill(); x.restore();
-    x.save(); rr(X(0), Y(0), L(100), L(142), L(4)); x.clip();
+    var BL = '#2FA4F0', DK = '#1B2A38', logo = null;
+    function SQT() { var n = String(F.sqEn || 'MAIN SQUAD').split(' ')[0]; return { MAIN: 'MAIN', ACADEMY: 'ACAD', YOUTH: 'YOUTH' }[n] || n; }
+    x.save(); x.shadowColor = 'rgba(0,0,0,0.65)'; x.shadowBlur = 60; x.shadowOffsetY = 24; rr(X(0), Y(0), L(100), L(142), L(3)); x.fillStyle = BL; x.fill(); x.restore();
+    x.save(); rr(X(0), Y(0), L(100), L(142), L(3)); x.clip();
     x.translate(ox, oy); x.scale(k, k);
-    function t(s, cx, cy, size, wt, col, ls, al) { x.font = wt + ' ' + size + 'px ' + NUM; x.fillStyle = col; x.textAlign = al || 'center'; x.textBaseline = 'middle'; sp(ls || 0); x.fillText(s, cx, cy); sp(0); }
-    var NAVY = '#12296B', P = new Path2D('M3 3H97V104Q55 114 3 98Z');
-    var pg = x.createLinearGradient(3, 3, 63, 120); pg.addColorStop(0, '#17934A'); pg.addColorStop(1, '#0A5A2C'); x.fillStyle = pg; x.fill(P);
-    x.save(); x.clip(P);
-    for (var r = 14, i = 0; r < 110; r += 6.5, i++) { x.beginPath(); x.arc(68, 42, r, 0, 7); x.lineWidth = 0.35; x.strokeStyle = i % 3 === 1 ? 'rgba(244,205,100,.55)' : 'rgba(255,255,255,.12)'; x.stroke(); }
-    if (F.photo) {
-      try {
-        var cu = null; try { cu = await Promise.race([srtCutout(F.photo), new Promise(function (r) { setTimeout(function () { r(null); }, 45000); })]); } catch (e0) { cu = null; }
-        var im = await loadImg(cu || F.photo), bx = cu ? 18 : 32, bw = cu ? 82 : 65, PW = Math.round(bw * k), PH = Math.round(111 * k);
-        var oc = document.createElement('canvas'); oc.width = PW; oc.height = PH; var oc2 = oc.getContext('2d');
-        var s = Math.max(PW / im.width, PH / im.height), dw = im.width * s, dh = im.height * s;
-        oc2.drawImage(im, (PW - dw) / 2, 0, dw, dh);
-        if (!cu) { oc2.globalCompositeOperation = 'destination-in'; var mg = oc2.createLinearGradient(0, 0, PW * 0.16, 0); mg.addColorStop(0, 'rgba(0,0,0,0)'); mg.addColorStop(1, '#000'); oc2.fillStyle = mg; oc2.fillRect(0, 0, PW, PH); }
-        x.drawImage(oc, bx, 3, bw, 111);
-      } catch (e) { /* skip photo */ }
-    }
+    function t(s, cx, cy, size, wt, col, ls, al) { x.font = wt + ' ' + size + 'px ' + NUM; x.fillStyle = col; x.textAlign = al || 'center'; x.textBaseline = 'alphabetic'; sp(ls || 0); x.fillText(s, cx, cy); sp(0); }
+    x.fillStyle = BL; x.fillRect(0, 0, 100, 142);
+    x.strokeStyle = 'rgba(255,255,255,.88)'; x.lineWidth = 8; for (var i = 0; i < 6; i++) { x.beginPath(); x.moveTo(i * 24 - 30, 146); x.lineTo(i * 24 + 50, -4); x.stroke(); }
+    x.fillStyle = 'rgba(255,255,255,.55)'; for (var gx = 1.2; gx < 100; gx += 2.4) for (var gy = 1.2; gy < 142; gy += 2.4) { x.beginPath(); x.arc(gx, gy, 0.5, 0, 7); x.fill(); }
+    x.save(); x.shadowColor = 'rgba(4,39,74,.45)'; x.shadowBlur = 1.2 * k; x.shadowOffsetY = 1.2 * k; rr(6, 12, 88, 118, 1.2); x.fillStyle = '#EDF3F9'; x.fill(); x.restore();
+    x.fillStyle = '#F7FBFE'; x.fillRect(10, 16, 50, 96); x.fillStyle = BL; for (var dx = 0.9; dx < 50; dx += 1.8) for (var dy = 0.9; dy < 96; dy += 1.8) { x.beginPath(); x.arc(10 + dx, 16 + dy, 0.42, 0, 7); x.fill(); }
+    x.lineWidth = 0.7; x.strokeStyle = BL; x.strokeRect(10, 16, 80, 96); x.lineWidth = 1.6; x.strokeStyle = '#fff'; x.strokeRect(11.3, 17.3, 48.4, 94.4);
+    x.save(); rr(12, 18, 46, 92, 1); x.clip();
+    var drew = false;
+    if (F.photo) { try { var im = await loadImg(F.photo), s0 = Math.max(46 / im.width, 92 / im.height), dw = im.width * s0, dh = im.height * s0; x.drawImage(im, 12 + (46 - dw) / 2, 18, dw, dh); drew = true; } catch (e) { /* skip */ } }
+    if (!drew) { x.fillStyle = BL; x.fillRect(12, 18, 46, 92); t(String(F.name || '?').charAt(0).toUpperCase(), 35, 78, 40, '900', 'rgba(255,255,255,.85)', 0); }
     x.restore();
-    x.beginPath(); x.moveTo(3, 66); x.lineTo(10, 71); x.lineTo(3, 76); x.closePath(); x.fillStyle = '#fff'; x.fill();
-    /* crest */
-    x.beginPath(); x.arc(17, 17, 11.3, 0, 7); x.fillStyle = '#fff'; x.fill();
-    try { var logo = await loadImg(LOGO); x.save(); x.beginPath(); x.arc(17, 17, 10.4, 0, 7); x.fillStyle = '#000'; x.fill(); x.clip(); x.drawImage(logo, 6.6, 6.6, 20.8, 20.8); x.restore(); } catch (e) { /* skip */ }
-    /* squad badge */
-    x.beginPath(); x.arc(17, 39.5, 8.6, 0, 7); x.fillStyle = '#fff'; x.fill(); x.beginPath(); x.arc(17, 39.5, 7.1, 0, 7); x.fillStyle = SQ[0]; x.fill();
-    var SQN = String(F.sqEn || 'MAIN SQUAD').split(' ')[0], SQT = { MAIN: 'MAIN', ACADEMY: 'ACAD', YOUTH: 'YOUTH' }[SQN] || SQN;
-    t(SQT, 17, 40, 3.5, '900', '#fff', 0.3);
-    /* tier tag */
-    rr(8, 52, 18, 9, 1.2); x.fillStyle = '#0E1016'; x.fill(); x.lineWidth = 0.7; x.strokeStyle = '#fff'; x.stroke(); t(String(F.tier), 17, 56.9, 5, '900', '#FFD36B', 0.4);
-    /* ovr */
-    x.beginPath(); x.arc(17, 97, 9.8, 0, 7); x.fillStyle = '#fff'; x.fill(); x.beginPath(); x.arc(17, 97, 8.6, 0, 7); x.lineWidth = 1; x.strokeStyle = NAVY; x.stroke();
-    t('OVR', 17, 93.4, 2.5, '700', NAVY, 0.3); t(String(F.rating), 17, 100, 7.6, '900', NAVY, 0);
-    /* date line + name */
-    t((F.number ? '#' + F.number + ' · ' : '') + F.tier + ' · ' + SQT, 6, 110.6, 3.6, '700', '#5B6478', 0.5, 'left');
-    var nm = String(F.name || '').toUpperCase(), nfs = Math.max(4, Math.min(11, 88 / (Math.max(6, nm.length) * 0.52)));
-    t(nm, 6, 118.6, nfs, '900', NAVY, 0.4, 'left');
-    x.fillStyle = '#DADDE4'; x.fillRect(6, 124.2, 88, 0.35);
-    var m = F.a.matches || 0, cells = [['MATCHES', m], ['WINS', F.a.wins || 0], ['DRAWS', F.a.draws || 0], ['GOALS', F.a.goals || 0], ['WIN %', (m ? Math.round(F.a.wins * 100 / m) : 0) + '%'], ['VALUE', F.value || '–']];
-    cells.forEach(function (c2, n) { var cx = 6 + 88 / 6 * (n + 0.5), v = String(c2[1]); t(v, cx, 129.2, v.length > 4 ? 3.9 : 4.6, '900', NAVY, 0); t(c2[0], cx, 132.4, 1.9, '700', '#7A808C', 0.25); });
-    x.beginPath(); x.moveTo(0, 134.5); x.lineTo(0, 142); x.lineTo(30, 142); x.closePath(); x.fillStyle = '#E0242B'; x.fill();
-    x.fillStyle = '#fff'; x.fillRect(62, 134.6, 34, 6.4); x.lineWidth = 0.5; x.strokeStyle = NAVY; x.strokeRect(62, 134.6, 34, 6.4); t('SRT · THUNDER', 79, 138.1, 3.3, '900', NAVY, 0.5);
+    x.fillStyle = BL; x.fillRect(62, 22, 26, 6.4); t(F.tier + ' · ' + SQT(), 75, 26.6, 3, '800', '#fff', 0.35);
+    var m = F.a.matches || 0, rowsD = [['GOALS', F.a.goals || 0, 'ball'], ['WINS', F.a.wins || 0, 'tri'], ['DRAWS', F.a.draws || 0, 'eq'], ['MATCHES', m, 'bars'], ['WIN %', (m ? Math.round(F.a.wins * 100 / m) : 0) + '%', '%'], ['VALUE', F.value || '–', '£']];
+    rowsD.forEach(function (r, n) {
+      var y0 = 30.5 + n * 12.6, cy = y0 + 6, v = String(r[1]);
+      x.beginPath(); x.arc(67, cy, 4, 0, 7); x.lineWidth = 0.6; x.strokeStyle = BL; x.stroke();
+      x.save(); x.translate(67, cy); x.strokeStyle = BL; x.fillStyle = BL; x.lineWidth = 0.7; x.lineCap = 'round';
+      if (r[2] === 'ball') { x.lineWidth = 0.55; x.beginPath(); x.arc(0, 0, 2.5, 0, 7); x.stroke(); x.beginPath(); x.moveTo(0, -1.2); x.lineTo(1.15, -0.35); x.lineTo(0.7, 0.95); x.lineTo(-0.7, 0.95); x.lineTo(-1.15, -0.35); x.closePath(); x.fill(); }
+      else if (r[2] === 'tri') { x.beginPath(); x.moveTo(0, -2.2); x.lineTo(2.5, 1.8); x.lineTo(-2.5, 1.8); x.closePath(); x.fill(); }
+      else if (r[2] === 'eq') { x.beginPath(); x.moveTo(-2.4, -1.1); x.lineTo(2.4, -1.1); x.moveTo(-2.4, 1.1); x.lineTo(2.4, 1.1); x.stroke(); }
+      else if (r[2] === 'bars') { x.beginPath(); [-2, 0, 2].forEach(function (bx) { x.moveTo(bx, -2); x.lineTo(bx, 2); }); x.stroke(); }
+      else t(r[2], 0, 1.5, 4.6, '800', BL, 0);
+      x.restore();
+      t(v, 73.5, y0 + 7.6, v.length > 3 ? 5.4 : 7, '800', DK, 0, 'left'); t(r[0], 73.5, y0 + 10.6, 2.2, '700', '#4B6479', 0.4, 'left');
+      x.fillStyle = BL; x.fillRect(62, y0 + 12, 26, 0.45);
+    });
+    x.save(); x.shadowColor = 'rgba(4,39,74,.35)'; x.shadowBlur = 1.2 * k; x.shadowOffsetY = 1.2 * k; x.fillStyle = '#F8FBFE'; x.fillRect(6, 108, 88, 20); x.restore(); x.fillStyle = '#F8FBFE'; x.fillRect(6, 108, 88, 20);
+    x.beginPath(); x.arc(14, 117.5, 6.2, 0, 7); x.fillStyle = '#fff'; x.fill(); x.lineWidth = 0.4; x.strokeStyle = '#D6E3EE'; x.stroke();
+    try { logo = await loadImg(LOGO); x.save(); x.beginPath(); x.arc(14, 117.5, 5.6, 0, 7); x.fillStyle = '#000'; x.fill(); x.clip(); x.drawImage(logo, 8.4, 111.9, 11.2, 11.2); x.restore(); } catch (e) { /* skip */ }
+    var parts = String(F.name || '').trim().toUpperCase().split(/\s+/), last = parts.pop() || '', first = parts.join(' ') || (F.tier + ' · ' + SQT()), lfs = Math.max(3.6, Math.min(7.6, 44 / (Math.max(5, last.length) * 0.56)));
+    t(first, 24, 114.4, 3.3, '600', DK, 0.3, 'left'); t(last, 24, 122.6, lfs, '800', DK, 0, 'left');
+    t('OVR', 90, 113.2, 2.6, '700', '#4B6479', 0.5, 'right'); t(String(F.rating), 90, 124.6, 12.5, '900', DK, 0, 'right');
+    rr(12, 131.2, 76, 7, 3.5); x.fillStyle = '#0A5E9E'; x.fill();
+    t('SYLHET ROLLING THUNDER' + (F.number ? ' · #' + F.number : ''), 50, 136.2, 3.3, '800', '#fff', 0.9);
+    x.fillStyle = BL; x.fillRect(76, 3, 18, 18); x.lineWidth = 1.1; x.strokeStyle = '#fff'; x.strokeRect(76, 3, 18, 18);
+    x.beginPath(); x.arc(85, 12, 7.2, 0, 7); x.fillStyle = '#fff'; x.fill();
+    if (logo) { x.save(); x.beginPath(); x.arc(85, 12, 6.6, 0, 7); x.fillStyle = '#000'; x.fill(); x.clip(); x.drawImage(logo, 78.4, 5.4, 13.2, 13.2); x.restore(); }
     x.restore();
     return new Promise(function (res, rej) { cv.toBlob(function (b) { b ? res(b) : rej(new Error('blob')); }, 'image/png'); });
   }
   async function drawBoardMoto(card, W, H) {
-    var story = H > 1500, rows = card.rows || [];
+    var story = H > 1500, rows = (card.rows || []).slice(0, 6);
     var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
     var x = cv.getContext('2d');
-    var NUM = '"Barlow Condensed","Saira Condensed","Arial Narrow",sans-serif', WIDE = '"Saira","Barlow Condensed",sans-serif';
+    var NUM = '"Barlow Condensed","Saira Condensed","Arial Narrow",sans-serif', WIDE = '"Archivo Black","Saira","Arial Black",sans-serif';
     function sp(px) { if ('letterSpacing' in x) x.letterSpacing = px + 'px'; }
     function T(s, px, py, size, wt, col, al, fam, ls) { x.font = wt + ' ' + size + 'px ' + (fam || NUM); x.fillStyle = col; x.textAlign = al || 'left'; x.textBaseline = 'middle'; sp(ls || 0); x.fillText(s, px, py); sp(0); }
-    /* light backdrop with soft swirls */
-    var bg = x.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#F1F2F5'); bg.addColorStop(1, '#DCDEE4'); x.fillStyle = bg; x.fillRect(0, 0, W, H);
-    x.lineCap = 'round';
-    [[-100, 250, 700, 120, 'rgba(255,255,255,.75)', 90], [W + 100, 620, 760, 300, 'rgba(255,255,255,.6)', 110], [200, H - 150, 900, H - 420, 'rgba(205,208,216,.55)', 80], [W + 50, H - 60, 500, H - 500, 'rgba(255,255,255,.55)', 100]].forEach(function (c) {
-      x.beginPath(); x.moveTo(c[0], c[1]); x.bezierCurveTo(c[2], c[3] - 200, c[2] - 300, c[3] + 300, c[0] + (c[0] < 0 ? 1500 : -1500), c[3] + 100); x.lineWidth = c[5]; x.strokeStyle = c[4]; x.stroke();
-    });
-    var pad = 40, top = story ? 100 : 50;
-    /* brand + title */
-    try { var logo = await loadImg(LOGO); x.save(); x.beginPath(); x.arc(W / 2 - 205, top + 34, 34, 0, 7); x.clip(); x.drawImage(logo, W / 2 - 239, top, 68, 68); x.restore(); } catch (e) { /* skip */ }
-    T('SYLHET ROLLING THUNDER', W / 2 - 155, top + 34, 38, '900', '#0B0B0F', 'left', NUM, 3);
-    var per = card.period === 'week' ? 'WEEKLY' : card.period === 'month' ? 'MONTHLY' : 'ALL-TIME', n = Math.min(9, rows.length);
-    var title = per + ' TOP ' + n, tf = story ? 118 : 104; x.font = 'italic 900 ' + tf + 'px ' + WIDE; while (x.measureText(title).width > W - 100 && tf > 50) { tf -= 4; x.font = 'italic 900 ' + tf + 'px ' + WIDE; }
-    T(title, W / 2, top + (story ? 170 : 150), tf, 'italic 900', '#0B0B0F', 'center', WIDE, 0);
-    var sy = top + (story ? 262 : 232);
-    var SQC = { MAIN: '#D8311A', ACADEMY: '#E8A317', YOUTH: '#1FA86B' }[String(squadCode(S.bsq || 'main'))] || '#D8311A';
-    var pill = squadName(S.bsq || 'main').toUpperCase() + ' · ' + String(card.rangeTxt || ''); x.font = '800 26px ' + NUM; sp(2); var sw = x.measureText(pill).width + 70; sp(0); rr(x, W / 2 - sw / 2, sy - 28, sw, 56, 10); x.fillStyle = SQC; x.fill();
-    T(pill, W / 2, sy, 26, '800', '#fff', 'center', NUM, 2);
-    if (x.measureText) { /* keep */ }
+    x.fillStyle = '#000'; x.fillRect(0, 0, W, H);
+    var rg = x.createRadialGradient(W / 2, 260, 40, W / 2, 260, 700); rg.addColorStop(0, 'rgba(60,70,90,.35)'); rg.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = rg; x.fillRect(0, 0, W, H);
+    var top = story ? 130 : 56;
+    T('SYLHET ROLLING THUNDER', W / 2, top + 30, 50, '800', '#fff', 'center', NUM, 3);
+    var per = card.period === 'week' ? 'WEEKLY' : card.period === 'month' ? 'MONTHLY' : 'ALL-TIME';
+    var title = per + ' TOP ' + Math.max(1, Math.min(6, rows.length || 6)), tf = story ? 170 : 150;
+    x.font = '400 ' + tf + 'px ' + WIDE; while (x.measureText(title).width > W - 110 && tf > 50) { tf -= 4; x.font = '400 ' + tf + 'px ' + WIDE; }
+    var ty = top + 30 + tf * 0.62 + 40;
+    x.save(); x.shadowColor = 'rgba(255,255,255,.85)'; x.shadowBlur = 36; T(title, W / 2, ty, tf, '400', '#fff', 'center', WIDE, 0); x.restore();
+    T(title, W / 2, ty, tf, '400', '#fff', 'center', WIDE, 0);
+    var sy = ty + tf * 0.5 + 52, pill = squadName(S.bsq || 'main').toUpperCase() + ' · ' + String(card.rangeTxt || '');
+    x.font = '800 32px ' + NUM; sp(2); var sw = x.measureText(pill).width + 90; sp(0);
+    x.beginPath(); x.moveTo(W / 2 - sw / 2 + 18, sy - 31); x.lineTo(W / 2 + sw / 2, sy - 31); x.lineTo(W / 2 + sw / 2 - 18, sy + 31); x.lineTo(W / 2 - sw / 2, sy + 31); x.closePath(); x.fillStyle = '#B8F500'; x.fill();
+    T(pill, W / 2, sy + 2, 32, '800', '#000', 'center', NUM, 2);
     var imgs = await Promise.all(rows.map(function (r) { return r.photo ? loadImg(r.photo).catch(function () { return null; }) : Promise.resolve(null); }));
-    function split(nm) { var p = String(nm || '').trim().split(/\s+/), l = p.pop() || '', f = p.join(' '); return [f.toUpperCase(), l.toUpperCase()]; }
-    var PAL = { 1: ['#FFC84A', '#E5821C', '#2A1504'], 2: ['#E5342A', '#7A1209', '#fff'], 3: ['#4D7BE8', '#1B2E73', '#fff'] };
-    var py0 = sy + (story ? 150 : 132);
-    /* podium */
-    var cwid = 316, gap = 26, startX = (W - (cwid * 3 + gap * 2)) / 2, baseH = story ? 520 : 400;
-    var order = [[1, 2], [0, 1], [2, 3]]; /* left=2nd, centre=1st, right=3rd */
-    order.forEach(function (o, slot) {
-      var i = o[0], r = rows[i]; if (!r) return;
-      var rank = o[1], cx = startX + slot * (cwid + gap), hgt = rank === 1 ? baseH + 50 : baseH, cy = rank === 1 ? py0 - 50 : py0;
-      var pal = PAL[rank];
-      x.save(); x.shadowColor = 'rgba(0,0,0,.25)'; x.shadowBlur = 24; x.shadowOffsetY = 10; rr(x, cx, cy, cwid, hgt, 8); x.fillStyle = '#111'; x.fill(); x.restore();
-      x.save(); rr(x, cx, cy, cwid, hgt, 8); x.clip();
-      var g = x.createLinearGradient(cx, cy, cx + cwid, cy + hgt); g.addColorStop(0, pal[0]); g.addColorStop(1, pal[1]); x.fillStyle = g; x.fillRect(cx, cy, cwid, hgt - 96);
-      x.font = 'italic 900 ' + (hgt * 0.62) + 'px ' + WIDE; x.fillStyle = 'rgba(255,255,255,.92)'; x.textAlign = 'left'; x.textBaseline = 'alphabetic'; x.fillText(String(rank), cx - 18, cy + hgt * 0.58);
-      if (imgs[i]) {
-        var im = imgs[i], bw = cwid * 0.78, bh = hgt - 96, s2 = Math.max(bw / im.width, bh / im.height), dw = im.width * s2, dh = im.height * s2;
-        var oc = document.createElement('canvas'); oc.width = Math.round(bw); oc.height = Math.round(bh); var o2 = oc.getContext('2d');
-        o2.drawImage(im, (bw - dw) / 2, -(dh - bh) * 0.1, dw, dh);
-        o2.globalCompositeOperation = 'destination-in'; o2.save(); o2.translate(bw * 0.5, bh * 0.5); o2.scale(bw * 0.62, bh * 0.66);
-        var mg = o2.createRadialGradient(0, 0, 0, 0, 0, 1); mg.addColorStop(0, '#000'); mg.addColorStop(0.6, '#000'); mg.addColorStop(1, 'rgba(0,0,0,0)'); o2.fillStyle = mg; o2.fillRect(-2, -2, 4, 4); o2.restore();
-        x.drawImage(oc, cx + cwid - bw, cy);
-      } else { x.font = '900 ' + (cwid * 0.5) + 'px ' + NUM; x.fillStyle = 'rgba(255,255,255,.35)'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(String(r.name || '?').charAt(0).toUpperCase(), cx + cwid * 0.62, cy + (hgt - 96) / 2); }
-      x.fillStyle = '#0B0B0F'; x.fillRect(cx, cy + hgt - 96, cwid, 96);
+    var PAL = [['#C084FC', '#B8F500'], ['#3EE6D6', '#2F5BFF'], ['#F5F51E', '#FF8A65'], ['#2F5BFF', '#1E2FA8'], ['#FF8A65', '#E8451E'], ['#B8F500', '#2FBF71']];
+    var cw = 300, gap = 15, gx0 = (W - (cw * 3 + gap * 2)) / 2, gy0 = sy + 62 + 34, footH = 110, avail = H - gy0 - footH, ch = Math.min(story ? 560 : 400, (avail - 20) / 2);
+    rows.forEach(function (r, i) {
+      var rowN = Math.min(3, rows.length - Math.floor(i / 3) * 3), cx = gx0 + (3 - rowN) * (cw + gap) / 2 + (i % 3) * (cw + gap), cy = gy0 + Math.floor(i / 3) * (ch + 20), a = PAL[i][0], b = PAL[i][1];
+      rr(x, cx, cy, cw, ch, 26); x.fillStyle = '#141414'; x.fill();
+      x.save(); rr(x, cx, cy, cw, ch, 26); x.clip();
+      var im = imgs[i];
+      if (im) { var s0 = Math.max(cw / im.width, (ch - 60) / im.height), dw = im.width * s0, dh = im.height * s0; x.drawImage(im, cx + (cw - dw) / 2, cy, dw, dh); }
+      else { var pg = x.createLinearGradient(cx, cy, cx + cw, cy + ch); pg.addColorStop(0, '#2A2A2E'); pg.addColorStop(1, '#0E0E10'); x.fillStyle = pg; x.fillRect(cx, cy, cw, ch); T(String(r.name || '?').charAt(0).toUpperCase(), cx + cw / 2, cy + (ch - 60) / 2, 190, '900', 'rgba(255,255,255,.14)', 'center', WIDE, 0); }
+      x.fillStyle = a; x.fillRect(cx, cy + ch - 62, cw, 62);
+      x.beginPath(); x.moveTo(cx + 110, cy + ch - 62); x.lineTo(cx + cw, cy + ch - 62); x.lineTo(cx + cw, cy + ch); x.lineTo(cx + 60, cy + ch); x.closePath(); x.fillStyle = b; x.fill();
       x.restore();
-      var nmp = split(r.name), by = cy + hgt - 96;
-      rr(x, cx + 14, by - 18, 74, 38, 4); x.fillStyle = '#fff'; x.fill(); T(String(r.rating || ''), cx + 51, by + 1, 30, '900', '#0B0B0F', 'center');
-      T(String(r.wins), cx + cwid - 78, by + 2, 52, '900', '#fff', 'right'); T(r.wins === 1 ? 'WIN' : 'WINS', cx + cwid - 70, by + 12, 22, '800', '#fff', 'left');
-      T(nmp[0] || '', cx + 16, by + 38, 22, '600', '#fff', 'left', NUM, 1);
-      var ln = nmp[1] || nmp[0]; var lf = 34; x.font = '900 ' + lf + 'px ' + NUM; while (x.measureText(ln).width > cwid - 30 && lf > 18) { lf -= 2; x.font = '900 ' + lf + 'px ' + NUM; }
-      T(ln, cx + 16, by + 70, lf, '900', '#fff', 'left');
+      rr(x, cx + 6, cy + ch - 100, cw - 12, 56, 18); x.fillStyle = '#080808'; x.fill();
+      rr(x, cx + 14, cy + ch - 90, 36, 36, 9); x.fillStyle = '#fff'; x.fill(); T(String(i + 1), cx + 32, cy + ch - 71, 28, '800', '#000', 'center', NUM, 0);
+      T((r.goals || 0) + 'G · ' + (r.wins || 0) + 'W', cx + 150, cy + ch - 71, 32, '800', '#fff', 'center', NUM, 1);
+      rr(x, cx + cw - 56, cy + ch - 88, 44, 32, 8); x.fillStyle = a; x.fill(); T(String(r.rating), cx + cw - 34, cy + ch - 71, 24, '800', '#000', 'center', NUM, 0);
+      var nm = String(r.name || '').toUpperCase(), nf = 26; x.font = '800 ' + nf + 'px ' + NUM; while (x.measureText(nm).width > cw - 30 && nf > 14) { nf -= 1; x.font = '800 ' + nf + 'px ' + NUM; }
+      T(nm, cx + cw / 2 + 20, cy + ch - 28, nf, '800', '#000', 'center', NUM, 1);
+      x.strokeStyle = '#2B2B2B'; x.lineWidth = 2; rr(x, cx, cy, cw, ch, 26); x.stroke();
     });
-    /* bars 4..9 */
-    var by0 = py0 + baseH + (story ? 34 : 26), bh2 = story ? 104 : 78, bgap = 8;
-    for (var j = 3; j < n; j++) {
-      var r2 = rows[j], yy = by0 + (j - 3) * (bh2 + bgap);
-      x.save(); x.shadowColor = 'rgba(0,0,0,.2)'; x.shadowBlur = 14; x.shadowOffsetY = 5; rr(x, pad, yy, W - pad * 2, bh2, 6); x.fillStyle = '#0B0B0F'; x.fill(); x.restore();
-      T(String(j + 1), pad + 44, yy + bh2 / 2, bh2 * 0.62, 'italic 900', '#8A8F9A', 'center', WIDE);
-      rr(x, pad + 100, yy + bh2 * 0.2, 110, bh2 * 0.6, 4); x.fillStyle = '#fff'; x.fill(); T(String(r2.rating || ''), pad + 155, yy + bh2 / 2 + 1, bh2 * 0.46, '900', '#0B0B0F', 'center');
-      var nmq = String(r2.name || '').toUpperCase(); var nf = bh2 * 0.5; x.font = '700 ' + nf + 'px ' + NUM; while (x.measureText(nmq).width > 460 && nf > 20) { nf -= 2; x.font = '700 ' + nf + 'px ' + NUM; }
-      T(nmq, pad + 240, yy + bh2 / 2 + 1, nf, '700', '#fff', 'left', NUM, 1);
-      T(r2.draws + 'D · ' + r2.goals + 'G', W - pad - 210, yy + bh2 / 2 + 2, bh2 * 0.3, '700', '#9AA0AC', 'right', NUM, 1);
-      T(String(r2.wins), W - pad - 98, yy + bh2 / 2, bh2 * 0.62, '900', '#fff', 'right'); T(r2.wins === 1 ? 'WIN' : 'WINS', W - pad - 88, yy + bh2 / 2 + 8, bh2 * 0.26, '800', '#fff', 'left');
-    }
-    T('sylhet-rolling-thunder.srt-bd.workers.dev  ·  #SRT', W / 2, H - (story ? 90 : 34), 24, '700', '#6B7280', 'center', NUM, 2);
-    return new Promise(function (res, rej) { cv.toBlob(function (b) { b ? res(b) : rej(new Error('blob')); }, 'image/png'); });
+    var fy = H - (story ? 120 : 62);
+    try { var logo = await loadImg(LOGO); x.save(); x.beginPath(); x.arc(W / 2 - 150, fy, 30, 0, 7); x.fillStyle = '#fff'; x.fill(); x.clip(); x.drawImage(logo, W / 2 - 178, fy - 28, 56, 56); x.restore(); } catch (e) { /* skip */ }
+    T('SRT · SEASON ' + new Date().getFullYear(), W / 2 - 100, fy + 2, 34, '800', '#fff', 'left', NUM, 3);
+    return new Promise(function (res, rej) { cv.toBlob(function (bl) { bl ? res(bl) : rej(new Error('blob')); }, 'image/png'); });
   }
   async function drawCard(card) {
     var story = card.fmt === 'story';
@@ -4461,7 +4409,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
   }
   function openBoardCard(active) {
     var rs = range(S.period, S.offset);
-    var rows = active.slice(0, 9).map(function (r, i) { return { rank: i + 1, name: r.p.name, photo: r.p.photo || null, wins: r.wins, draws: r.draws, goals: r.goals, rating: ratingFor(r.id) }; });
+    var rows = active.slice(0, 6).map(function (r, i) { return { rank: i + 1, name: r.p.name, photo: r.p.photo || null, wins: r.wins, draws: r.draws, goals: r.goals, rating: ratingFor(r.id) }; });
     startCard(S.period, S.offset, [], 'board', rows);
   }
   function startCard(period, offset, leaders, kind, rows) {

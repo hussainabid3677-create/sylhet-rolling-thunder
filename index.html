@@ -5871,7 +5871,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     return host;
   }
   /* ---------- SRT Leagues: Main + Academy (EPL / La Liga style) ---------- */
-  var LG_DEF = { main: { t: 'Main League', q: 10, sq: 'main', ic: 'users' }, academy: { t: 'Academy League', q: 6, sq: 'academy', ic: 'spark' } };
+  var LG_DEF = { main: { t: 'SRT Super Clash S-1', q: 10, sq: 'main', ic: 'users' }, academy: { t: 'SRT Rising Star Cup S-1', q: 6, sq: 'academy', ic: 'spark' } };
   var LG_RULES = "match /leagues/{id} {\n  allow read: if true;\n  allow write: if request.auth != null\n    && exists(/databases/$(database)/documents/admins/$(request.auth.token.email.lower()));\n}";
   var lgSt = { sel: 'auction', tab: { main: 'table', academy: 'table' }, rd: { main: 0, academy: 0 }, err: false, loaded: false, fx: null, photo: '', busy: false };
   function lgData(k) { var d = S.leagues && S.leagues[k]; return d || { teams: [], fixtures: [], rounds: 1, q: LG_DEF[k].q }; }
@@ -5885,7 +5885,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     }, function (e) { console.error(e); lgSt.err = true; lgSt.loaded = true; if (S.tab === 'tournament' && lgSt.sel !== 'auction') renderView(); });
   }
   function lgSave(k, patch, msg) {
-    var d = Object.assign({}, lgData(k), patch); d.title = d.title || LG_DEF[k].t; d.updatedAt = Date.now();
+    var d = Object.assign({}, lgData(k), patch); delete d.title; d.updatedAt = Date.now();
     S.leagues = S.leagues || {}; S.leagues[k] = d; renderView();
     return S.db.doc('leagues/' + k).set(d).then(function () { toast(msg || 'Saved'); }).catch(function (e) { console.error(e); toast('Not saved. Log in as an admin and publish the leagues rule.'); });
   }
@@ -5923,6 +5923,24 @@ h2,.home-section-head h2{letter-spacing:.02em}
         cb(c.toDataURL('image/jpeg', 0.75));
       }; im.onerror = function () { toast('Could not read this image'); }; im.src = r.result;
     }; r.readAsDataURL(file);
+  }
+  function lgShrink(src) {
+    return new Promise(function (res) {
+      var s = String(src || ''); if (!s) { res(''); return; }
+      if (s.indexOf('data:') !== 0) { res(s.length < 2000 ? s : ''); return; }
+      var im = new Image(); im.onload = function () {
+        var z = 180, c = document.createElement('canvas'), w = im.width, hh = im.height, m = Math.min(w, hh); c.width = z; c.height = z;
+        c.getContext('2d').drawImage(im, (w - m) / 2, Math.max(0, (hh - m) * 0.15), m, m, 0, 0, z, z); res(c.toDataURL('image/jpeg', 0.75));
+      }; im.onerror = function () { res(''); }; im.src = s;
+    });
+  }
+  function lgShrink(src) {
+    return new Promise(function (res) {
+      if (!src) { res(''); return; }
+      var im = new Image(); im.crossOrigin = 'anonymous';
+      im.onload = function () { try { var s = 180, c = document.createElement('canvas'), w = im.width, hh = im.height, m = Math.min(w, hh); c.width = s; c.height = s; c.getContext('2d').drawImage(im, (w - m) / 2, Math.max(0, (hh - m) * 0.15), m, m, 0, 0, s, s); res(c.toDataURL('image/jpeg', 0.75)); } catch (e) { res(String(src).length < 2000 ? src : ''); } };
+      im.onerror = function () { res(String(src).length < 2000 ? src : ''); }; im.src = src;
+    });
   }
   function lgHub() {
     var items = [['auction', 'Auction', 'Tournament', 'trophy'], ['main', 'Main Team', 'League', 'users'], ['academy', 'Academy', 'League', 'spark']];
@@ -6003,10 +6021,19 @@ h2,.home-section-head h2{letter-spacing:.02em}
       lgSave(k, { teams: teams }, 'Player added');
     } }, 'Add player');
     box.append(h('div', { class: 'lg-card' }, h('h4', null, 'Add participant'), h('label', null, 'Name', nm), h('label', null, 'Photo', file), prev, add));
-    var imp = h('button', { type: 'button', class: 'btn ghost', onclick: function () {
-      var teams = (d.teams || []).slice(), have = {}; teams.forEach(function (t) { have[String(t.name).toLowerCase()] = 1; }); var n0 = teams.length;
-      S.players.forEach(function (p, pid) { if (squadOf(p) !== def.sq || have[String(p.name).toLowerCase()]) return; var ph = p.photo && String(p.photo).length < 30000 ? p.photo : ''; teams.push({ id: 'p' + (p.id || pid), name: p.name, photo: ph }); });
-      if (teams.length === n0) { toast('No new squad players to add'); return; } lgSave(k, { teams: teams }, (teams.length - n0) + ' players added');
+    var imp = h('button', { type: 'button', class: 'btn ghost', onclick: async function () {
+      if (lgSt.busy) return; lgSt.busy = true; toast('Adding players…');
+      try {
+        var teams = (d.teams || []).map(function (t) { return Object.assign({}, t); }), byName = {}; teams.forEach(function (t) { byName[String(t.name).toLowerCase()] = t; });
+        var list = []; S.players.forEach(function (p, pid) { if (squadOf(p) === def.sq) list.push([p, pid]); });
+        var added = 0, fixed = 0;
+        for (var i = 0; i < list.length; i++) {
+          var p = list[i][0], pid = list[i][1], ex = byName[String(p.name).toLowerCase()];
+          if (ex) { if (!ex.photo && p.photo) { ex.photo = await lgShrink(p.photo); if (ex.photo) fixed++; } continue; }
+          teams.push({ id: 'p' + (p.id || pid), name: p.name, photo: await lgShrink(p.photo) }); added++;
+        }
+        if (!added && !fixed) { toast('No new squad players to add'); } else { await lgSave(k, { teams: teams }, added + ' added' + (fixed ? ', ' + fixed + ' photos updated' : '')); }
+      } finally { lgSt.busy = false; }
     } }, 'Add all ' + (k === 'main' ? 'Main' : 'Academy') + ' squad players');
     box.append(h('div', { class: 'lg-card' }, h('h4', null, 'Participants (' + (d.teams || []).length + ')'), imp));
     var list = h('div', { class: 'lg-plist' });
@@ -6031,7 +6058,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
   function lgRoot(k) {
     var d = lgData(k), def = LG_DEF[k], root = h('div', { class: 'lg-main sq-' + def.sq });
     var played = (d.fixtures || []).filter(function (f) { return f.hs != null; }).length, total = (d.fixtures || []).length;
-    root.append(h('section', { class: 'lg-hero' }, h('div', { class: 'lg-k' }, 'SRT · ' + (k === 'main' ? 'MAIN TEAM' : 'ACADEMY')), h('h2', null, d.title || def.t),
+    root.append(h('section', { class: 'lg-hero' }, h('div', { class: 'lg-k' }, 'SRT · ' + (k === 'main' ? 'MAIN TEAM' : 'ACADEMY')), h('h2', null, def.t),
       h('p', null, 'Top ' + lgQ(k) + ' players qualify for the SRT Champions League'),
       h('div', { class: 'lg-st' }, h('b', null, String((d.teams || []).length), h('small', null, 'Players')), h('b', null, played + '/' + total, h('small', null, 'Played')), h('b', null, String(lgQ(k)), h('small', null, 'Qualify')))));
     if (lgSt.err) {

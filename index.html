@@ -1736,6 +1736,34 @@ h2,.home-section-head h2{letter-spacing:.02em}
 .lg-x{border:0;background:transparent;color:#ff7a6b;padding:6px;border-radius:8px}
 .lg-rules{white-space:pre-wrap;font-size:12px;padding:12px;border-radius:10px;background:#14110B;border:1px solid rgba(255,200,87,.2);color:#E9D7B0}
 .lg-main{display:flex;flex-direction:column;gap:14px}
+
+/* ===== v13: premium reactions + score warning ===== */
+.reacts{display:grid;grid-template-columns:repeat(4,1fr) auto;gap:8px;margin-top:12px}
+.react{position:relative;display:flex;align-items:center;justify-content:center;gap:7px;min-height:46px;padding:8px 10px;border-radius:14px;color:#d8c9a6;font-weight:700;cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,200,87,.10),rgba(255,255,255,.02));border:1px solid rgba(255,200,87,.24);box-shadow:inset 0 1px 0 rgba(255,236,170,.14),0 6px 16px rgba(0,0,0,.3);overflow:hidden}
+.react .re-i{display:grid;place-items:center;color:#FFC857;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.react b{font-family:var(--f-display);font-weight:800;font-size:17px;letter-spacing:.04em;font-variant-numeric:tabular-nums;color:#F3E6C8}
+.react.on{color:#1a1204;border-color:#FFD27A;background:linear-gradient(180deg,#FFF0B8,#F8CE6B 55%,#E39A2D);box-shadow:0 0 0 2px rgba(255,200,87,.25),0 0 26px rgba(255,150,50,.5),inset 0 1px 0 rgba(255,255,255,.7)}
+.react.on .re-i{color:#4a2a05}.react.on b{color:#2a1803}
+.react.on .re-i svg{fill:currentColor;fill-opacity:.35}
+.react.r-fire.on .re-i svg,.react.r-love.on .re-i svg{fill-opacity:.7}
+.react:active{transform:scale(.94)}
+.react.pop .re-i{animation:rePop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes rePop{0%{transform:scale(1)}40%{transform:scale(1.7) rotate(-10deg)}100%{transform:scale(1)}}
+.react.share{padding:8px 14px;color:#FFC857;background:rgba(255,255,255,.03)}
+.react.share b{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FFC857}
+.moment .bestbadge,.moment .bestbadge .hico{color:#2a1803;font-weight:800}
+.scorewarn{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;margin:4px 0;background:linear-gradient(90deg,rgba(255,170,60,.16),rgba(255,170,60,.04));border:1px solid rgba(255,170,60,.5)}
+.scorewarn .sw-i{color:#FFB347;display:grid;place-items:center}
+.scorewarn .sw-t{flex:1;min-width:180px}.scorewarn b{display:block;color:#FFD27A;letter-spacing:.06em;text-transform:uppercase;font-size:13px}
+.scorewarn p{margin:2px 0 0;color:#f3e6c8;font-size:14px;line-height:1.5}
+.scorewarn .sw-b{display:flex;gap:8px;flex-wrap:wrap;width:100%}
+.scorewarn.hot{background:linear-gradient(90deg,rgba(255,80,60,.2),rgba(255,80,60,.05));border-color:#ff6a4d;animation:swShake .4s}
+.scorewarn.hot b,.scorewarn.hot .sw-i{color:#ff8a6d}
+@keyframes swShake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){.react.pop .re-i,.scorewarn.hot{animation:none}}
+@media (max-width:380px){.react{padding:8px 6px;gap:5px}}
+.moment .bestbadge .ico{color:#2a1803}
 </style>
 </head>
 <body>
@@ -2380,6 +2408,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
           h('button', { class: 'iconbtn', 'aria-label': 'Less', disabled: S.conc <= 0, onclick: function () { S.conc = Math.max(0, S.conc - 1); renderView(); } }, icon('minus')),
           h('span', { class: 'goalnum' }, String(S.conc)),
           h('button', { class: 'iconbtn', 'aria-label': 'More', disabled: S.conc >= 30, onclick: function () { S.conc = Math.min(30, S.conc + 1); renderView(); } }, icon('plus')))),
+      scoreWarn(S.wf = { kind: S.kind, goals: S.goals, conc: S.conc, ack: S.ackKey }, function () { S.kind = S.wf.kind; S.ackKey = null; S.scoreHot = false; renderView(); }, function () { S.ackKey = S.wf.ack; addWin(); }, !!S.scoreHot),
       h('label', { class: 'field' }, 'Date', dateIn),
       (subBtn = h('button', { class: 'btn block', disabled: !S.pick || S.busy, onclick: addWin }, S.busy ? 'Saving…' : (S.kind === 'draw' ? 'Add draw' : S.kind === 'loss' ? 'Add loss' : 'Add win'))));
     var root = h('div', { class: 'stack' }, form, ntAdminBox());
@@ -2395,6 +2424,8 @@ h2,.home-section-head h2{letter-spacing:.02em}
   function monthKey(ts) { var d = new Date(ts); return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
   async function addWin() {
     if (!S.pick || S.busy || !S.db) return;
+    if (scoreBlocked({ kind: S.kind, goals: S.goals, conc: S.conc, ack: S.ackKey })) { S.scoreHot = true; renderView(); setTimeout(function () { var el = document.querySelector('.scorewarn'); if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 60); return; }
+    S.scoreHot = false; S.ackKey = null;
     S.busy = true; renderView();
     try {
       var ts = dateToTs(S.date);
@@ -2451,6 +2482,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
           h('button', { class: 'iconbtn', 'aria-label': 'Less', disabled: e.conc <= 0, onclick: function () { e.conc = Math.max(0, e.conc - 1); again(); } }, icon('minus')),
           h('span', { class: 'goalnum' }, String(e.conc)),
           h('button', { class: 'iconbtn', 'aria-label': 'More', disabled: e.conc >= 30, onclick: function () { e.conc = Math.min(30, e.conc + 1); again(); } }, icon('plus')))),
+      scoreWarn(e, again, function () { saveEditWin(); }, !!e.hot),
       h('label', { class: 'field' }, 'Date', dateIn),
       h('div', { class: 'actions' },
         h('button', { class: 'btn', disabled: e.busy, onclick: saveEditWin }, e.busy ? 'Saving…' : 'Save'),
@@ -2460,6 +2492,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     var e = S.ed; if (!e || e.busy || !S.db) return;
     var w = S.wins.filter(function (x) { return x.id === e.id; })[0];
     if (!w) { closeSheet(); return; }
+    if (scoreBlocked({ kind: e.kind, goals: e.goals, conc: e.conc, ack: e.ack })) { e.hot = true; renderSheet(); return; }
     e.busy = true; renderSheet();
     try {
       var ts = dateToTs(e.date), nm = monthKey(ts), om = w.month;
@@ -3446,7 +3479,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     var lp = 0; try { lp = +localStorage.getItem('srt-lastpost') || 0; } catch (e0) { /* ignore */ }
     if (!S.canWrite && Date.now() - lp < 60000) { toast('Please wait, you can post again after 1 minute.'); return; }
     m.busy = true; renderView();
-    try { var cap = String(m.cap || '').trim().slice(0, 80); var by = String(pname() || '').trim().slice(0, 24); var ref = await S.db.collection('moments').add({ img: m.img, cap: cap, ts: Date.now(), by: by, dev: devId() });
+    try { var cap = String(m.cap || '').trim().slice(0, 80); var by = 'SRT Admin'; var ref = await S.db.collection('moments').add({ img: m.img, cap: cap, ts: Date.now(), by: by, dev: devId() });
       try { localStorage.setItem('srt-lastpost', String(Date.now())); } catch (e2) { /* ignore */ } m.img = null; m.cap = ''; m.open = false; m.link = { id: ref.id, cap: cap }; toast('Photo added 📸'); }
     catch (e) { console.error(e); toast(writeFail(e)); }
     m.busy = false; renderView();
@@ -3477,26 +3510,61 @@ h2,.home-section-head h2{letter-spacing:.02em}
     }
     return true;
   }
+
+  function impliedKind(g, c) { return g > c ? 'win' : g === c ? 'draw' : 'loss'; }
+  var KIND_LBL = { win: 'Win', draw: 'Draw', loss: 'Loss' };
+  function scoreWarn(o, again, onSave, forced) {
+    var g = o.goals != null ? o.goals : S.goals, c = o.conc, imp = impliedKind(g, c);
+    if (imp === o.kind) return null;
+    if (!forced && g + c === 0) return null;
+    var key = o.kind + g + '-' + c;
+    var wrap = h('div', { class: 'scorewarn' + (forced ? ' hot' : ''), role: 'alert' },
+      h('span', { class: 'sw-i' }, icoEl('bolt', 22)),
+      h('div', { class: 'sw-t' },
+        h('b', null, 'Check the score'),
+        h('p', null, 'A score of ' + g + ' – ' + c + ' is a ' + KIND_LBL[imp].toLowerCase() + ', but "' + KIND_LBL[o.kind] + '" is selected.')),
+      h('div', { class: 'sw-b' },
+        h('button', { class: 'btn sm', onclick: function () { o.kind = imp; o.ack = null; again(); } }, 'Switch to ' + KIND_LBL[imp]),
+        h('button', { class: 'btn sm ghost', onclick: function () { o.ack = key; onSave(); } }, 'Save anyway')));
+    return wrap;
+  }
+  function scoreBlocked(o) {
+    var g = o.goals != null ? o.goals : S.goals, imp = impliedKind(g, o.conc);
+    return imp !== o.kind && o.ack !== o.kind + g + '-' + o.conc;
+  }
+  var RE_SVG = {
+    fire: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+    lol: '<circle cx="12" cy="12" r="10"/><path d="M18 13a6 6 0 0 1-6 5 6 6 0 0 1-6-5h12Z"/><path d="M9 9h.01M15 9h.01"/>',
+    clap: '<path d="M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.13a.5.5 0 0 1 .96 0L14.06 8.5a2 2 0 0 0 1.44 1.44l6.13 1.58a.5.5 0 0 1 0 .96l-6.13 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.13a.5.5 0 0 1-.96 0z"/>',
+    love: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+    link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'
+  };
+  function reIco(k) {
+    var s = document.createElement('span'); s.className = 're-i'; s.setAttribute('aria-hidden', 'true');
+    s.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' + RE_SVG[k] + '</svg>';
+    return s;
+  }
+  var RE_LBL = { fire: 'Fire', lol: 'Funny', clap: 'Applause', love: 'Love' };
   function viewMoments() {
     listenFun();
     var m = S.mom, me = devId();
-    var box = h('section', { class: 'card panel' }, h('h2', null, '📸 Moment of the day'),
-      h('p', { class: 'muted small' }, 'Best match photos — anyone can post. React with 🔥😂👏😍; the photo with the most reactions in a week becomes "Moment of the Week". Tap the 🔗 button on any photo to share its link.'));
+    var box = h('section', { class: 'card panel' }, h('h2', null, hIco('camera', 'Moment of the day')),
+      h('p', { class: 'muted small' }, 'The best match photos, posted by the club. React to your favourites: the photo with the most reactions in a week becomes "Moment of the Week". Tap Share on any photo to send its link.'));
     if (m.err) { box.append(h('p', { class: 'notice' }, 'The photo wall is not on yet or posting isn\'t permitted. It will start once the admin updates Firestore rules.')); return box; }
     if (m.link) {
       var lk = m.link;
-      box.append(h('div', { class: 'linkbox' }, h('strong', null, '✅ Posted! Link created:'), h('p', { class: 'small', style: 'word-break:break-all;margin:6px 0' }, momLink(lk.id)),
-        h('div', { class: 'btnrow' }, h('button', { class: 'btn', onclick: function () { shareMoment(lk.id, lk.cap); } }, '🔗 Share link'),
+      box.append(h('div', { class: 'linkbox' }, h('strong', null, 'Posted! Link created:'), h('p', { class: 'small', style: 'word-break:break-all;margin:6px 0' }, momLink(lk.id)),
+        h('div', { class: 'btnrow' }, h('button', { class: 'btn', onclick: function () { shareMoment(lk.id, lk.cap); } }, 'Share link'),
           h('button', { class: 'btn ghost', onclick: function () { m.link = null; renderView(); } }, 'OK'))));
     }
-    {
-      if (!m.open) box.append(h('button', { class: 'btn ghost block', onclick: function () { m.open = true; renderView(); } }, '➕ Add new photo'));
+    if (S.canWrite) {
+      if (!m.open) box.append(h('button', { class: 'btn ghost block', onclick: function () { m.open = true; renderView(); } }, hIco('plus', 'Add new photo')));
       else {
         var fin = h('input', { type: 'file', accept: 'image/*', class: 'vh', id: 'momIn', onchange: async function (ev) { var f = ev.target.files && ev.target.files[0]; if (!f) return; try { m.img = await fitImg(f, 1000); renderView(); } catch (e) { toast('The image could not be read.'); } } });
         var cin = h('input', { type: 'text', maxlength: 80, placeholder: 'Caption (e.g. That goal by Abid!)', value: m.cap, class: 'sel' }); cin.oninput = function () { m.cap = cin.value; };
         var nin2 = h('input', { type: 'text', maxlength: 24, placeholder: 'Your name (optional)', value: pname(), class: 'sel' }); nin2.oninput = function () { S.pname = nin2.value; try { localStorage.setItem('srt-pname', nin2.value); } catch (e) { /* ignore */ } };
-        box.append(fin, m.img ? h('img', { src: m.img, class: 'momprev', alt: '' }) : null,
-          h('label', { class: 'btn ghost block', for: 'momIn' }, m.img ? '🔄 Other photo' : '🖼️ Choose photo'), cin, nin2,
+        box.append(fin, m.img ? h('img', { src: m.img, class: 'momprev', alt: '' }) : '',
+          h('label', { class: 'btn ghost block', for: 'momIn' }, hIco('image', m.img ? 'Other photo' : 'Choose photo')), cin,
           h('div', { class: 'btnrow' }, h('button', { class: 'btn', disabled: !m.img || m.busy, onclick: saveMoment }, m.busy ? 'Please wait...' : 'Post'), h('button', { class: 'btn ghost', onclick: function () { m.open = false; m.img = null; renderView(); } }, 'Cancel')));
       }
     }
@@ -3508,14 +3576,14 @@ h2,.home-section-head h2{letter-spacing:.02em}
     function mcard(x, focused) {
       var t = tally[x.id] || { total: 0 }, row = h('div', { class: 'reacts' });
       REACTS.forEach(function (rc) {
-        row.append(h('button', { class: 'react' + (mineR[x.id] === rc[0] ? ' on' : ''), onclick: function () { if (mineR[x.id] !== rc[0]) reactTo(x.id, rc[0]); } }, rc[1] + ' ' + (t[rc[0]] || 0)));
+        row.append(h('button', { class: 'react r-' + rc[0] + (mineR[x.id] === rc[0] ? ' on' : ''), 'aria-pressed': mineR[x.id] === rc[0] ? 'true' : 'false', 'aria-label': RE_LBL[rc[0]], onclick: function (ev) { if (mineR[x.id] !== rc[0]) { ev.currentTarget.classList.add('pop'); reactTo(x.id, rc[0]); } } }, reIco(rc[0]), h('b', null, String(t[rc[0]] || 0))));
       });
-      row.append(h('button', { class: 'react', 'aria-label': 'Share link', onclick: function () { shareMoment(x.id, x.cap); } }, '🔗 Share'));
+      row.append(h('button', { class: 'react share', 'aria-label': 'Share link', onclick: function () { shareMoment(x.id, x.cap); } }, reIco('link'), h('b', null, 'Share')));
       return h('article', { class: 'card moment' + (x.id === bestId ? ' best' : ''), id: 'mom-' + x.id },
-        focused ? h('p', { class: 'bestbadge' }, '📌 Shared post') : (x.id === bestId ? h('p', { class: 'bestbadge' }, '🏅 Moment of the Week') : null),
+        focused ? h('p', { class: 'bestbadge' }, hIco('star', 'Shared post')) : (x.id === bestId ? h('p', { class: 'bestbadge' }, hIco('crown', 'Moment of the Week')) : null),
         h('img', { src: x.img, alt: x.cap || 'Match photo', loading: focused ? 'eager' : 'lazy' }),
         h('div', { class: 'mbody' }, x.cap ? h('p', { class: 'mcap' }, x.cap) : null, h('p', { class: 'muted small' }, (x.by ? '📷 ' + x.by + ' · ' : '') + fmtDay.format(x.ts)), row,
-          S.canWrite ? h('button', { class: 'link-btn', onclick: function () { if (window.confirm('Delete this photo?')) S.db.doc('moments/' + x.id).delete().catch(function (e) { toast(writeFail(e)); }); } }, '🗑️ Delete') : null));
+          S.canWrite ? h('button', { class: 'link-btn', onclick: function () { if (window.confirm('Delete this photo?')) S.db.doc('moments/' + x.id).delete().catch(function (e) { toast(writeFail(e)); }); } }, 'Delete') : null));
     }
     if (m.focus) {
       var fx = m.list.filter(function (x) { return x.id === m.focus; })[0] || m.fdoc;

@@ -5345,7 +5345,7 @@ html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme
       out.push(h('section', { class: 'ann', role: 'status' },
         h('span', { class: 'ann-i' }, icoEl('bell', 22)),
         h('div', { class: 'ann-t' }, h('b', null, 'Club announcement'), h('p', null, String(a.text))),
-        h('button', { class: 'iconbtn ann-x', 'aria-label': 'Dismiss', onclick: function () { try { localStorage.setItem('srt-ann', String(a.ts)); } catch (e) { /* ignore */ } renderView(); } }, icon('close'))));
+        S.canWrite ? h('button', { class: 'iconbtn ann-x', 'aria-label': 'Remove announcement', onclick: function () { S.db.doc('t_cfg/banner').set({ text: String(a.text), on: false, ts: Date.now() }).then(function () { toast('Announcement removed'); }).catch(function (e) { console.error(e); toast('Not removed. Log in as an admin.'); }); } }, icon('close')) : null));
     }
     if (S.canWrite) {
       var ta = h('textarea', { class: 'input', rows: '2', maxlength: '160', placeholder: 'Write an announcement (match time, notice, new signing...)' }); ta.value = a && a.text ? a.text : '';

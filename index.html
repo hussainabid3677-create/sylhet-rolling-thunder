@@ -1764,6 +1764,55 @@ h2,.home-section-head h2{letter-spacing:.02em}
 @media (prefers-reduced-motion:reduce){.react.pop .re-i,.scorewarn.hot{animation:none}}
 @media (max-width:380px){.react{padding:8px 6px;gap:5px}}
 .moment .bestbadge .ico{color:#2a1803}
+
+/* ===== v14: home upgrade — colour accent, type polish, announcement, CL race, latest moment ===== */
+:root{--teal:#2FD3C4;--teal-deep:#0E2A3A}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(70% 38% at 50% -6%,rgba(255,170,60,.17),transparent 72%),radial-gradient(46% 32% at 105% 34%,rgba(47,211,196,.08),transparent 70%)}
+body>*{position:relative;z-index:1}
+.sb-live{color:var(--teal)!important}
+.home-section-head h2{font-family:var(--f-display);font-weight:800;font-size:24px;letter-spacing:.05em;text-transform:uppercase;background:linear-gradient(180deg,#fff,var(--gold-hi) 55%,var(--gold));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;position:relative;padding-left:14px}
+.home-section-head h2:before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:4px;border-radius:2px;background:linear-gradient(180deg,var(--thunder),var(--gold-hi))}
+.home-section-head .muted{letter-spacing:.22em;font-size:11px;font-weight:700;color:var(--teal)!important}
+.ann-wrap{display:flex;flex-direction:column;gap:8px}
+.ann{display:flex;align-items:center;gap:12px;padding:14px 14px 14px 16px;border-radius:16px;background:linear-gradient(90deg,rgba(255,170,60,.22),rgba(255,170,60,.06));border:1px solid rgba(255,200,87,.5);box-shadow:0 10px 28px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,236,170,.2);position:relative;overflow:hidden}
+.ann:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#FF8A3D,#FFD27A)}
+.ann-i{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;flex:none;color:#FFC857;background:rgba(255,170,60,.14);border:1px solid rgba(255,200,87,.45);animation:epGlow 3s ease-in-out infinite}
+.ann-t{flex:1;min-width:0}.ann-t b{display:block;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#FFC857}
+.ann-t p{margin:3px 0 0;color:#fff4d8;font-size:15px;line-height:1.45;font-weight:600;word-break:break-word}
+.ann-x{flex:none}
+.ann-ed{border:1px dashed rgba(255,200,87,.3);border-radius:14px;padding:10px 12px;background:rgba(255,255,255,.02)}
+.ann-ed summary{cursor:pointer;color:#FFC857;font-weight:700;letter-spacing:.06em;list-style:none}
+.ann-ed textarea{width:100%;margin:10px 0;resize:none}.ann-ed .actions{display:flex;gap:8px}
+@keyframes epGlow{50%{box-shadow:0 0 0 8px rgba(255,170,60,.05),0 0 30px rgba(255,140,50,.35)}}
+.clr{display:flex;flex-direction:column;gap:10px}
+.clr-c{display:flex;flex-direction:column;gap:7px;text-align:left;width:100%;padding:14px 14px 12px;border-radius:18px;color:inherit;font:inherit;cursor:pointer;background:linear-gradient(180deg,rgba(255,200,87,.08),rgba(255,255,255,.015));border:1px solid rgba(255,200,87,.24);box-shadow:inset 0 1px 0 rgba(255,236,170,.12),0 10px 26px rgba(0,0,0,.32)}
+.clr-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.clr-h b{font-family:var(--f-display);font-weight:800;font-size:19px;letter-spacing:.05em;text-transform:uppercase;color:#F3E6C8}
+.clr-h span{font-size:10px;letter-spacing:.2em;font-weight:800;color:#06241f;background:linear-gradient(90deg,#2FD3C4,#7CF0E2);padding:4px 9px;border-radius:999px}
+.clr-r{display:grid;grid-template-columns:26px 1fr 84px auto;align-items:center;gap:9px;padding:6px 0;border-top:1px solid rgba(255,255,255,.06);color:#bfb39a}
+.clr-r.in{color:#f3e6c8}.clr-n{font-family:var(--f-display);font-weight:800;color:#8d7f63}.clr-r.in .clr-n{color:var(--teal)}
+.clr-nm{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase;font-size:14px;letter-spacing:.03em}
+.clr-bar{height:7px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden}
+.clr-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#8a6a2a,#C98A2C)}
+.clr-r.in .clr-bar i{background:linear-gradient(90deg,#1fa99d,#7CF0E2);box-shadow:0 0 10px rgba(47,211,196,.5)}
+.clr-p{font-size:11px;letter-spacing:.12em;color:#8d7f63;white-space:nowrap}.clr-p b{font-family:var(--f-display);font-size:19px;color:#FFD27A;letter-spacing:.02em}
+.clr-f{font-size:11px;letter-spacing:.14em;color:var(--teal);text-transform:uppercase;font-weight:700;margin-top:2px}
+.lm{display:flex;flex-direction:column;gap:10px}
+.lm-c{position:relative;display:block;width:100%;padding:0;border:1px solid rgba(255,200,87,.35);border-radius:20px;overflow:hidden;background:#0c0a07;cursor:pointer;box-shadow:0 14px 34px rgba(0,0,0,.45),0 0 0 1px rgba(255,200,87,.08)}
+.lm-c img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.lm-g{position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.88))}
+.lm-t{position:absolute;left:16px;right:16px;bottom:14px;text-align:left;display:flex;flex-direction:column;gap:3px}
+.lm-t b{font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:.03em;color:#fff4d8;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.lm-t em{font-style:normal;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#FFC857}
+.lm-b{position:absolute;top:12px;right:12px;padding:6px 12px;border-radius:999px;background:rgba(10,8,5,.65);border:1px solid rgba(255,200,87,.45);color:#FFC857;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;backdrop-filter:blur(6px)}
+@media (prefers-reduced-motion:reduce){.ann-i{animation:none}}
+
+body,html{transition:none}
+
+/* daily colour: rotate the whole accent hue, keep photos natural */
+html[data-day-theme]:not([data-day-theme="Gold"]){filter:hue-rotate(var(--hue))}
+html[data-day-theme]:not([data-day-theme="Gold"]) img,html[data-day-theme]:not([data-day-theme="Gold"]) video,html[data-day-theme]:not([data-day-theme="Gold"]) canvas,html[data-day-theme]:not([data-day-theme="Gold"]) .photo,html[data-day-theme]:not([data-day-theme="Gold"]) .sb-num,html[data-day-theme]:not([data-day-theme="Gold"]) .sb-n{filter:hue-rotate(var(--hue-n))}
+html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell span{filter:hue-rotate(var(--hue-n))}
 </style>
 </head>
 <body>
@@ -5263,6 +5312,84 @@ h2,.home-section-head h2{letter-spacing:.02em}
     return h('div', { class: 'stack' }, heroBox, hxTicker(), ntBanner(), bdHomeBanner(), nsHomeStrip(), srtLower(), hpAdminPanel(), h('p', { class: 'muted small', style: 'text-align:center;padding:8px 0 0' }, 'SYLHET ROLLING THUNDER · Built around performance, respect and competition'));
   }
   function homeView() { return srtHome(); }
+
+
+  /* ---- daily colour theme (changes every day, Asia/Dhaka date) ---- */
+  var DAY_THEMES = [
+    { n: 'Gold', hue: 0 }, { n: 'Emerald', hue: 105 }, { n: 'Ice', hue: 165 }, { n: 'Violet', hue: 225 },
+    { n: 'Ember', hue: 335 }, { n: 'Aqua', hue: 135 }
+  ];
+  function applyDayTheme() {
+    try {
+      var day = Math.floor((Date.now() + 6 * 3600000) / 86400000), t = DAY_THEMES[day % DAY_THEMES.length];
+      var de = document.documentElement;
+      de.style.setProperty('--hue', t.hue + 'deg'); de.style.setProperty('--hue-n', (-t.hue) + 'deg');
+      de.setAttribute('data-day-theme', t.n);
+    } catch (e) { /* ignore */ }
+  }
+  applyDayTheme();
+  /* ---- announcement banner (stored in t_cfg/banner, admin edits on Home) ---- */
+  function annListen() {
+    if (!S.db || S.annOn) return; S.annOn = true;
+    S.db.doc('t_cfg/banner').onSnapshot(function (s) { S.ann = s.exists ? s.data() : null; if (S.tab === 'home') renderView(); }, function (e) { console.error(e); });
+  }
+  function lmListen() {
+    if (!S.db || S.lmOn) return; S.lmOn = true;
+    S.db.collection('moments').orderBy('ts', 'desc').limit(1).onSnapshot(function (sn) { S.lm = sn.docs.length ? sn.docs[0].data() : null; if (S.tab === 'home') renderView(); }, function (e) { console.error(e); });
+  }
+  function annBanner() {
+    var a = S.ann, out = [];
+    var on = a && a.on && String(a.text || '').trim();
+    var seen = false; try { seen = on && localStorage.getItem('srt-ann') === String(a.ts); } catch (e) { /* ignore */ }
+    if (on && !seen) {
+      out.push(h('section', { class: 'ann', role: 'status' },
+        h('span', { class: 'ann-i' }, icoEl('bell', 22)),
+        h('div', { class: 'ann-t' }, h('b', null, 'Club announcement'), h('p', null, String(a.text))),
+        h('button', { class: 'iconbtn ann-x', 'aria-label': 'Dismiss', onclick: function () { try { localStorage.setItem('srt-ann', String(a.ts)); } catch (e) { /* ignore */ } renderView(); } }, icon('close'))));
+    }
+    if (S.canWrite) {
+      var ta = h('textarea', { class: 'input', rows: '2', maxlength: '160', placeholder: 'Write an announcement (match time, notice, new signing...)' }); ta.value = a && a.text ? a.text : '';
+      var save = function (flag) {
+        var t = ta.value.trim().slice(0, 160); if (flag && !t) { toast('Write something first'); return; }
+        S.db.doc('t_cfg/banner').set({ text: t, on: !!flag, ts: Date.now() }).then(function () { toast(flag ? 'Announcement published' : 'Announcement removed'); }).catch(function (e) { console.error(e); toast('Not saved. Log in as an admin.'); });
+      };
+      out.push(h('details', { class: 'ann-ed' }, h('summary', null, hIco('bell', on ? 'Edit announcement (live)' : 'Add announcement')), ta,
+        h('div', { class: 'actions' }, h('button', { class: 'btn sm', onclick: function () { save(true); } }, 'Publish'), h('button', { class: 'btn sm ghost', onclick: function () { save(false); } }, 'Remove'))));
+    }
+    return out.length ? h('div', { class: 'ann-wrap' }, out) : null;
+  }
+  /* ---- Road to the Champions League ---- */
+  function clRace() {
+    var ks = ['main', 'academy'].filter(function (k) { var d = S.leagues && S.leagues[k]; return d && (d.teams || []).length > 1; });
+    if (!ks.length) return null;
+    var sec = h('section', { class: 'clr' }, h('div', { class: 'home-section-head' }, h('h2', null, 'Road to the Champions League'), h('span', { class: 'muted small' }, 'LIVE RACE')));
+    ks.forEach(function (k) {
+      var d = lgData(k), tb = lgTable(d), q = d.q || LG_DEF[k].q, played = tb.reduce(function (s, r) { return s + r.p; }, 0);
+      var lead = Math.max(1, tb[0] ? tb[0].pts : 1), rows = tb.slice(0, Math.min(5, tb.length));
+      var card = h('button', { class: 'clr-c', onclick: function () { lgSt.sel = k; goTab('tournament'); } },
+        h('div', { class: 'clr-h' }, h('b', null, LG_DEF[k].t), h('span', null, 'TOP ' + q + ' QUALIFY')));
+      rows.forEach(function (r, i) {
+        card.append(h('div', { class: 'clr-r' + (i < q ? ' in' : '') },
+          h('span', { class: 'clr-n' }, String(i + 1).padStart(2, '0')), h('span', { class: 'clr-nm' }, r.t.name),
+          h('span', { class: 'clr-bar' }, h('i', { style: 'width:' + Math.max(played ? 6 : 0, Math.round(r.pts * 100 / lead)) + '%' })),
+          h('span', { class: 'clr-p' }, h('b', null, String(r.pts)), ' PTS')));
+      });
+      card.append(h('div', { class: 'clr-f' }, played ? 'Tap to see the full table' : 'Season starts soon, tap to view fixtures'));
+      sec.append(card);
+    });
+    return sec;
+  }
+  /* ---- latest moment ---- */
+  function latestMoment() {
+    var m = (S.mom && S.mom.list && S.mom.list[0]) || S.lm; if (!m || !m.img) return null;
+    var dt = m.ts ? new Date(m.ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
+    return h('section', { class: 'lm' }, h('div', { class: 'home-section-head' }, h('h2', null, 'Latest Moment'), h('span', { class: 'muted small' }, 'STORM GALLERY')),
+      h('button', { class: 'lm-c', onclick: function () { goTab('moments'); } },
+        h('img', { src: m.img, alt: m.cap || 'Latest moment', loading: 'lazy' }),
+        h('span', { class: 'lm-g' }),
+        h('span', { class: 'lm-t' }, h('b', null, m.cap || 'Match moment'), h('em', null, (m.by || 'SRT Admin') + (dt ? ' · ' + dt : '')) ),
+        h('span', { class: 'lm-b' }, hIco('camera', 'Open gallery'))));
+  }
   function srtHome() {
     var root = homeViewOld();
     var tw = 0, td = 0, tl = 0, tg = 0;
@@ -5283,6 +5410,8 @@ h2,.home-section-head h2{letter-spacing:.02em}
     items.forEach(function (x) { rail.append(h('button', { class: 'rail-b', onclick: function () { goTab(x[2]); } }, h('span', { class: 'rail-i' }, icoEl(x[0], 22)), h('em', null, x[1]))); });
     var first = root.firstElementChild;
     if (first) { root.insertBefore(board, first); first.after(rail); } else { root.prepend(board); }
+    var _ab = annBanner(); if (_ab) root.prepend(_ab);
+    if (rail.parentNode) { var _anc = rail; [latestMoment()].forEach(function (e) { if (e) { _anc.after(e); _anc = e; } }); }
     var m = root.querySelector('.home-metrics'); if (m) m.remove();
     return root;
   }
@@ -6770,7 +6899,7 @@ h2,.home-section-head h2{letter-spacing:.02em}
     ntcListen();
     listenAC();
     listenSignings();
-    lgListen();
+    lgListen(); annListen(); lmListen();
     bdListenPublic();
     S.auth.onAuthStateChanged(async function (u) {
       S.user = u; S.canWrite = false;

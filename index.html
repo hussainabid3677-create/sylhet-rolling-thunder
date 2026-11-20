@@ -30,7 +30,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Saira+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=Saira:ital,wght@1,900&family=Archivo+Black&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Saira+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=Saira:ital,wght@1,900&family=Archivo+Black&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap"></noscript>
-<script>try{if(localStorage.getItem('srt-theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
+<script>try{localStorage.removeItem('srt-theme')}catch(e){}</script>
 <style>
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
 [hidden] { display: none !important; }
@@ -1813,7 +1813,14 @@ body,html{transition:none}
 html[data-day-theme]:not([data-day-theme="Gold"]){filter:hue-rotate(var(--hue))}
 html[data-day-theme]:not([data-day-theme="Gold"]) img,html[data-day-theme]:not([data-day-theme="Gold"]) video,html[data-day-theme]:not([data-day-theme="Gold"]) canvas,html[data-day-theme]:not([data-day-theme="Gold"]) .photo,html[data-day-theme]:not([data-day-theme="Gold"]) .sb-num,html[data-day-theme]:not([data-day-theme="Gold"]) .sb-n{filter:hue-rotate(var(--hue-n))}
 html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell span{filter:hue-rotate(var(--hue-n))}
+
+/* v14b: no theme toggle in header; premium announcement type */
+#role .hdr-tools,#role .iconbtn{display:none!important}
+.ann-t b{font-family:var(--f-display);font-size:12px;font-weight:800;letter-spacing:.32em;color:var(--gold)}
+.ann-t p{font-family:'Playfair Display','Noto Sans Bengali',Georgia,serif;font-style:italic;font-weight:600;font-size:19px;line-height:1.45;letter-spacing:.01em;margin-top:6px;background:linear-gradient(180deg,#fff,var(--gold-hi) 70%,var(--gold));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 2px 8px rgba(0,0,0,.45))}
+.ann-t b:after{content:"";display:block;width:46px;height:2px;margin-top:6px;border-radius:2px;background:linear-gradient(90deg,var(--gold),transparent)}
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600;1,700&display=swap" rel="stylesheet">
 </head>
 <body>
 <div id="srtSplash" aria-hidden="true"><img src="logo.webp" alt=""></div>
@@ -5660,7 +5667,7 @@ html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme
   function hIco(n, text) { return h('span', { class: 'hico' }, icoEl(n, 20), text); }
 
   /* ---------- theme (dark / light) ---------- */
-  function themeNow() { try { return localStorage.getItem('srt-theme') === 'light' ? 'light' : 'dark'; } catch (e) { return 'dark'; } }
+  function themeNow() { return 'dark'; }
   function themeSet(t) {
     document.documentElement.setAttribute('data-theme', t);
     try { localStorage.setItem('srt-theme', t); } catch (e) { /* ignore */ }
@@ -6048,7 +6055,7 @@ html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme
     return h('div', { class: 'hdr-tools' },
       null && h('button', { class: 'iconbtn nc-bell', 'aria-label': 'Notifications' + (n ? ' (' + n + ' new)' : ''), title: 'Notifications', onclick: function () { goTab('notifs'); } },
         icoEl('bell', 19), n ? h('i', { class: 'nc-badge' }, n > 9 ? '9+' : bn(n)) : null),
-      h('button', { class: 'iconbtn', 'aria-label': light ? 'Dark theme' : 'Light theme', title: light ? 'Dark theme' : 'Light theme', onclick: themeToggle }, icoEl(light ? 'moon' : 'sun', 19)));
+      null);
   }
   function offlineBar() { var el = document.getElementById('offbar'); if (el) el.remove(); }
 

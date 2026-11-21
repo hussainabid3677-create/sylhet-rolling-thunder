@@ -1819,6 +1819,13 @@ html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme
 .ann-t b{font-family:var(--f-display);font-size:12px;font-weight:800;letter-spacing:.32em;color:var(--gold)}
 .ann-t p{font-family:var(--f-display),'Noto Sans Bengali',sans-serif;font-style:normal;font-weight:700;font-size:21px;line-height:1.35;letter-spacing:.02em;margin-top:7px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.45)}
 .ann-t b:after{content:"";display:block;width:46px;height:2px;margin-top:6px;border-radius:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+
+/* v14c: card colour picker */
+.tsw{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.tsw-b{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 2px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:inherit;font:inherit;cursor:pointer}
+.tsw-b[aria-pressed="true"]{border-color:#fff;background:rgba(255,255,255,.1);box-shadow:0 0 0 1px rgba(255,255,255,.35)}
+.tsw-d{width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35),0 3px 8px rgba(0,0,0,.4)}
+.tsw-t{font-size:11px;font-weight:700;letter-spacing:.04em}
 </style>
 </head>
 <body>
@@ -4265,50 +4272,101 @@ html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme
     return new Promise(function (res, rej) { cv.toBlob(function (b) { b ? res(b) : rej(new Error('blob')); }, 'image/png'); });
   }
   async function drawBoardMoto(card, W, H) {
-    var story = H > 1500, rows = (card.rows || []).slice(0, 6);
+    var story = H > 1500, rows = (card.rows || []).slice(0, 5), n = rows.length;
     var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
     var x = cv.getContext('2d');
     var NUM = '"Barlow Condensed","Saira Condensed","Arial Narrow",sans-serif', WIDE = '"Archivo Black","Saira","Arial Black",sans-serif';
     function sp(px) { if ('letterSpacing' in x) x.letterSpacing = px + 'px'; }
     function T(s, px, py, size, wt, col, al, fam, ls) { x.font = wt + ' ' + size + 'px ' + (fam || NUM); x.fillStyle = col; x.textAlign = al || 'left'; x.textBaseline = 'middle'; sp(ls || 0); x.fillText(s, px, py); sp(0); }
-    x.fillStyle = '#000'; x.fillRect(0, 0, W, H);
-    var rg = x.createRadialGradient(W / 2, 260, 40, W / 2, 260, 700); rg.addColorStop(0, 'rgba(60,70,90,.35)'); rg.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = rg; x.fillRect(0, 0, W, H);
-    var top = story ? 130 : 56;
-    T('SYLHET ROLLING THUNDER', W / 2, top + 30, 50, '800', '#fff', 'center', NUM, 3);
-    var per = card.period === 'week' ? 'WEEKLY' : card.period === 'month' ? 'MONTHLY' : 'ALL-TIME';
-    var title = per + ' TOP ' + Math.max(1, Math.min(6, rows.length || 6)), tf = story ? 170 : 150;
-    x.font = '400 ' + tf + 'px ' + WIDE; while (x.measureText(title).width > W - 110 && tf > 50) { tf -= 4; x.font = '400 ' + tf + 'px ' + WIDE; }
-    var ty = top + 30 + tf * 0.62 + 40;
-    x.save(); x.shadowColor = 'rgba(255,255,255,.85)'; x.shadowBlur = 36; T(title, W / 2, ty, tf, '400', '#fff', 'center', WIDE, 0); x.restore();
-    T(title, W / 2, ty, tf, '400', '#fff', 'center', WIDE, 0);
-    var sy = ty + tf * 0.5 + 52, pill = squadName(S.bsq || 'main').toUpperCase() + ' · ' + String(card.rangeTxt || '');
-    x.font = '800 32px ' + NUM; sp(2); var sw = x.measureText(pill).width + 90; sp(0);
-    x.beginPath(); x.moveTo(W / 2 - sw / 2 + 18, sy - 31); x.lineTo(W / 2 + sw / 2, sy - 31); x.lineTo(W / 2 + sw / 2 - 18, sy + 31); x.lineTo(W / 2 - sw / 2, sy + 31); x.closePath(); x.fillStyle = '#B8F500'; x.fill();
-    T(pill, W / 2, sy + 2, 32, '800', '#000', 'center', NUM, 2);
+    function lg(x0, y0, x1, y1, st) { var g = x.createLinearGradient(x0, y0, x1, y1); st.forEach(function (q) { g.addColorStop(q[0], q[1]); }); return g; }
+    function fit(s, maxW, size, wt, ls) { x.font = wt + ' ' + size + 'px ' + NUM; sp(ls || 0); while (x.measureText(s).width > maxW && size > 12) { size -= 1; x.font = wt + ' ' + size + 'px ' + NUM; } sp(0); return size; }
+    var THEMES = {
+      gold: { b1c: '16,13,9', b0c: '10,9,8', h: '#FFF1BE', m: '#F7CF67', l: '#C58A1E', rgb: '247,207,103', glow: '255,184,64', tint: '255,230,170', d: '#2A1A00', d2: '#5A3A06', b0: '#0A0908', b1: '#100D09', b2: '#14100B', b3: '#1B1409' },
+      emerald: { b1c: '10,21,17', b0c: '7,16,12', h: '#C9FFE6', m: '#4FE3A4', l: '#15855A', rgb: '79,227,164', glow: '40,200,140', tint: '190,255,225', d: '#022016', d2: '#05402B', b0: '#07100C', b1: '#0A1511', b2: '#0D1914', b3: '#10241B' },
+      blue: { b1c: '10,16,26', b0c: '7,11,18', h: '#D3EBFF', m: '#6FB8FF', l: '#2465C2', rgb: '111,184,255', glow: '60,140,255', tint: '200,228,255', d: '#04142E', d2: '#0B2B5E', b0: '#070B12', b1: '#0A101A', b2: '#0D1522', b3: '#101C30' },
+      crimson: { b1c: '23,10,10', b0c: '16,7,7', h: '#FFD3D3', m: '#FF6B6B', l: '#B3202B', rgb: '255,107,107', glow: '240,60,70', tint: '255,214,214', d: '#2A0508', d2: '#5C0F16', b0: '#100707', b1: '#170A0A', b2: '#1B0D0D', b3: '#271010' },
+      violet: { b1c: '16,11,26', b0c: '11,8,18', h: '#EBDCFF', m: '#B58CFF', l: '#6C36C9', rgb: '181,140,255', glow: '140,90,255', tint: '226,210,255', d: '#16062E', d2: '#341463', b0: '#0B0812', b1: '#100B1A', b2: '#140E21', b3: '#1B1230' }
+    };
+    var TH = THEMES[card.theme] || THEMES['gold'] || THEMES.gold;
+    var GOLD = [TH.h, TH.m, TH.l];
+    function foil(y0, y1) { return lg(0, y0, 0, y1, [[0, GOLD[0]], [0.5, GOLD[1]], [1, GOLD[2]]]); }
+    var MED = [[TH.h, TH.m, TH.l], ['#F4F6FA', '#C9CFDB', '#8A93A6'], ['#FFD9B0', '#E0955A', '#9A5524'], [TH.h, TH.m, TH.l], [TH.h, TH.m, TH.l]];
+    function medal(i, y0, y1) { var m = MED[i] || MED[4]; return lg(0, y0, 0, y1, [[0, m[0]], [0.5, m[1]], [1, m[2]]]); }
+    /* background */
+    x.fillStyle = TH.b0; x.fillRect(0, 0, W, H);
+    var g1 = x.createRadialGradient(W * 0.7, H * 0.2, 10, W * 0.7, H * 0.2, H * 0.62); g1.addColorStop(0, 'rgba(' + TH.glow + ',.22)'); g1.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g1; x.fillRect(0, 0, W, H);
+    var g2 = x.createRadialGradient(W * 0.1, H * 0.95, 10, W * 0.1, H * 0.95, H * 0.5); g2.addColorStop(0, 'rgba(' + TH.glow + ',.12)'); g2.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g2; x.fillRect(0, 0, W, H);
+    x.strokeStyle = 'rgba(' + TH.tint + ',.045)'; x.lineWidth = 2; for (var dx = -H; dx < W; dx += 64) { x.beginPath(); x.moveTo(dx, H); x.lineTo(dx + H * 0.62, 0); x.stroke(); }
+    /* frame */
+    var fm = 26; x.strokeStyle = 'rgba(' + TH.rgb + ',.35)'; x.lineWidth = 2; x.strokeRect(fm, fm, W - fm * 2, H - fm * 2);
+    x.strokeStyle = TH.m; x.lineWidth = 5; var cl = 54;
+    [[fm, fm, 1, 1], [W - fm, fm, -1, 1], [fm, H - fm, 1, -1], [W - fm, H - fm, -1, -1]].forEach(function (c) { x.beginPath(); x.moveTo(c[0], c[1] + c[3] * cl); x.lineTo(c[0], c[1]); x.lineTo(c[0] + c[2] * cl, c[1]); x.stroke(); });
+    var logo = null; try { logo = await loadImg(LOGO); } catch (e) { /* skip */ }
+    var cx0 = W / 2, hy = story ? 130 : 92;
+    /* header */
+    if (logo) { x.beginPath(); x.arc(cx0, hy, 38, 0, 7); x.fillStyle = foil(hy - 38, hy + 38); x.fill(); x.save(); x.beginPath(); x.arc(cx0, hy, 33, 0, 7); x.clip(); x.fillStyle = '#000'; x.fillRect(cx0 - 34, hy - 34, 68, 68); x.drawImage(logo, cx0 - 34, hy - 34, 68, 68); x.restore(); }
+    T('SYLHET ROLLING THUNDER', cx0, hy + 62, 30, '700', 'rgba(' + TH.tint + ',.85)', 'center', NUM, 9);
+    var per = card.period === 'week' ? 'WEEKLY' : card.period === 'month' ? 'MONTHLY' : 'ALL-TIME', title = per + ' TOP ' + Math.max(1, n || 5), tf = story ? 120 : 108, ty = hy + 62 + 20 + tf * 0.55;
+    x.font = '400 ' + tf + 'px ' + WIDE; while (x.measureText(title).width > W - 140 && tf > 50) { tf -= 4; x.font = '400 ' + tf + 'px ' + WIDE; }
+    x.save(); x.shadowColor = 'rgba(' + TH.glow + ',.45)'; x.shadowBlur = 34; T(title, cx0, ty, tf, '400', foil(ty - tf * 0.5, ty + tf * 0.5), 'center', WIDE, 1); x.restore();
+    T(title, cx0, ty, tf, '400', foil(ty - tf * 0.5, ty + tf * 0.5), 'center', WIDE, 1);
+    var sy = ty + tf * 0.5 + 34, sub = (squadName(S.bsq || 'main') + '  ·  ' + String(card.rangeTxt || '')).toUpperCase();
+    x.font = '700 30px ' + NUM; sp(6); var sw2 = x.measureText(sub).width; sp(0);
+    x.fillStyle = 'rgba(' + TH.rgb + ',.55)'; x.fillRect(60, sy, cx0 - sw2 / 2 - 90, 2); x.fillRect(cx0 + sw2 / 2 + 30, sy, cx0 - sw2 / 2 - 90, 2);
+    T(sub, cx0, sy, 30, '700', '#fff', 'center', NUM, 6);
+    if (!n) return new Promise(function (res) { cv.toBlob(res, 'image/png'); });
     var imgs = await Promise.all(rows.map(function (r) { return r.photo ? loadImg(r.photo).catch(function () { return null; }) : Promise.resolve(null); }));
-    var PAL = [['#C084FC', '#B8F500'], ['#3EE6D6', '#2F5BFF'], ['#F5F51E', '#FF8A65'], ['#2F5BFF', '#1E2FA8'], ['#FF8A65', '#E8451E'], ['#B8F500', '#2FBF71']];
-    var cw = 300, gap = 15, gx0 = (W - (cw * 3 + gap * 2)) / 2, gy0 = sy + 62 + 34, footH = 110, avail = H - gy0 - footH, ch = Math.min(story ? 560 : 400, (avail - 20) / 2);
-    rows.forEach(function (r, i) {
-      var rowN = Math.min(3, rows.length - Math.floor(i / 3) * 3), cx = gx0 + (3 - rowN) * (cw + gap) / 2 + (i % 3) * (cw + gap), cy = gy0 + Math.floor(i / 3) * (ch + 20), a = PAL[i][0], b = PAL[i][1];
-      rr(x, cx, cy, cw, ch, 26); x.fillStyle = '#141414'; x.fill();
-      x.save(); rr(x, cx, cy, cw, ch, 26); x.clip();
-      var im = imgs[i];
-      if (im) { var s0 = Math.max(cw / im.width, (ch - 60) / im.height), dw = im.width * s0, dh = im.height * s0; x.drawImage(im, cx + (cw - dw) / 2, cy, dw, dh); }
-      else { var pg = x.createLinearGradient(cx, cy, cx + cw, cy + ch); pg.addColorStop(0, '#2A2A2E'); pg.addColorStop(1, '#0E0E10'); x.fillStyle = pg; x.fillRect(cx, cy, cw, ch); T(String(r.name || '?').charAt(0).toUpperCase(), cx + cw / 2, cy + (ch - 60) / 2, 190, '900', 'rgba(255,255,255,.14)', 'center', WIDE, 0); }
-      x.fillStyle = a; x.fillRect(cx, cy + ch - 62, cw, 62);
-      x.beginPath(); x.moveTo(cx + 110, cy + ch - 62); x.lineTo(cx + cw, cy + ch - 62); x.lineTo(cx + cw, cy + ch); x.lineTo(cx + 60, cy + ch); x.closePath(); x.fillStyle = b; x.fill();
+    /* layout */
+    var mx = 58, cw = W - mx * 2, top = sy + 36, bot = H - (story ? 150 : 96), rest = n - 1, gap = 12;
+    var rowH = rest ? Math.min(story ? 152 : 120, ((bot - top) * 0.5 - gap * (rest - 1)) / rest) : 0;
+    var heroH = (bot - top) - (rest ? rest * rowH + rest * gap : 0); heroH = Math.min(heroH, story ? 700 : 520);
+    var used = heroH + (rest ? rest * (rowH + gap) : 0), yh = top + ((bot - top) - used) / 2;
+    /* hero card */
+    var r0 = rows[0], im0 = imgs[0];
+    x.save(); x.shadowColor = 'rgba(0,0,0,.7)'; x.shadowBlur = 40; x.shadowOffsetY = 16; rr(x, mx, yh, cw, heroH, 26); x.fillStyle = TH.b1; x.fill(); x.restore();
+    x.save(); rr(x, mx, yh, cw, heroH, 26); x.clip();
+    x.fillStyle = lg(mx, yh, mx + cw, yh + heroH, [[0, TH.b3], [1, TH.b0]]); x.fillRect(mx, yh, cw, heroH);
+    var phx = mx + cw * 0.40, phw = cw * 0.60;
+    if (im0) { var s0 = Math.max(phw / im0.width, heroH / im0.height), dw = im0.width * s0, dh = im0.height * s0; x.save(); x.beginPath(); x.rect(phx, yh, phw, heroH); x.clip(); x.drawImage(im0, phx + (phw - dw) / 2, yh, dw, dh); x.restore(); }
+    else { x.fillStyle = lg(phx, yh, phx + phw, yh + heroH, [[0, '#2B2418'], [1, '#0E0C09']]); x.fillRect(phx, yh, phw, heroH); T(String(r0.name || '?').charAt(0).toUpperCase(), phx + phw / 2, yh + heroH / 2, heroH * 0.7, '800', 'rgba(255,255,255,.1)', 'center', NUM, 0); }
+    x.fillStyle = lg(phx, 0, phx + phw * 0.5, 0, [[0, TH.b1], [1, 'rgba(' + TH.b1c + ',0)']]); x.fillRect(phx - 2, yh, phw * 0.55, heroH);
+    x.fillStyle = lg(0, yh + heroH * 0.55, 0, yh + heroH, [[0, 'rgba(' + TH.b0c + ',0)'], [1, 'rgba(' + TH.b0c + ',.85)']]); x.fillRect(mx, yh, cw, heroH);
+    /* ghost 01 */
+    var gz = heroH * 1.05; x.font = '800 ' + gz + 'px ' + NUM; x.textAlign = 'left'; x.textBaseline = 'middle'; x.fillStyle = 'rgba(' + TH.rgb + ',.07)'; x.fillText('1', mx + 14, yh + heroH * 0.52);
+    x.restore();
+    rr(x, mx, yh, cw, heroH, 26); x.lineWidth = 3; x.strokeStyle = lg(mx, yh, mx + cw, yh + heroH, [[0, TH.h], [0.5, TH.l], [1, TH.m]]); x.stroke();
+    var tx = mx + 40, lab = card.period === 'week' ? 'PLAYER OF THE WEEK' : card.period === 'month' ? 'PLAYER OF THE MONTH' : 'ALL-TIME LEGEND';
+    x.font = '800 30px ' + NUM; sp(5); var lw = x.measureText('№ 1  ·  ' + lab).width + 44; sp(0);
+    rr(x, tx, yh + 38, lw, 52, 26); x.fillStyle = foil(yh + 38, yh + 90); x.fill(); T('№ 1  ·  ' + lab, tx + 22, yh + 65, 30, '800', TH.d, 'left', NUM, 5);
+    var nmH = fit(String(r0.name || '').toUpperCase(), cw * 0.56 - 50, story ? 104 : 92, '800', 1), nm0 = String(r0.name || '').toUpperCase();
+    var parts = nm0.split(/\s+/), last = parts.length > 1 ? parts.pop() : '', first = parts.join(' ');
+    if (last) { var f1 = fit(first, cw * 0.5, story ? 52 : 46, '700', 4); T(first, tx, yh + heroH * 0.40, f1, '700', 'rgba(' + TH.tint + ',.9)', 'left', NUM, 4); var f2 = fit(last, cw * 0.54, story ? 122 : 106, '800', 1); T(last, tx, yh + heroH * 0.40 + f1 * 0.55 + f2 * 0.52, f2, '800', '#fff', 'left', NUM, 1); }
+    else { T(nm0, tx, yh + heroH * 0.5, nmH, '800', '#fff', 'left', NUM, 1); }
+    var cy2 = yh + heroH - 108, chips = [[String(r0.goals || 0), 'GOALS'], [String(r0.wins || 0), 'WINS'], [String(r0.rating), 'OVR']], chw = Math.min(150, (cw * 0.5 - 20) / 3), ccx = tx;
+    chips.forEach(function (c, k) { var w = chw, gold = k === 2; rr(x, ccx, cy2, w, 84, 14); x.fillStyle = gold ? foil(cy2, cy2 + 84) : 'rgba(255,255,255,.07)'; x.fill(); if (!gold) { x.lineWidth = 1.5; x.strokeStyle = 'rgba(' + TH.rgb + ',.45)'; x.stroke(); } T(c[0], ccx + w / 2, cy2 + 36, 54, '800', gold ? TH.d : '#fff', 'center', NUM, 0); T(c[1], ccx + w / 2, cy2 + 68, 20, '700', gold ? TH.d2 : TH.m, 'center', NUM, 4); ccx += w + 12; });
+    /* list rows */
+    for (var i = 1; i < n; i++) {
+      var r = rows[i], y = yh + heroH + gap + (i - 1) * (rowH + gap), im = imgs[i], pr = rowH * 0.36;
+      x.save(); x.shadowColor = 'rgba(0,0,0,.5)'; x.shadowBlur = 20; x.shadowOffsetY = 8; rr(x, mx, y, cw, rowH, 20); x.fillStyle = TH.b2; x.fill(); x.restore();
+      x.save(); rr(x, mx, y, cw, rowH, 20); x.clip(); x.fillStyle = lg(mx, y, mx + cw, y, [[0, 'rgba(' + TH.rgb + ',.12)'], [0.5, 'rgba(255,255,255,.025)'], [1, 'rgba(' + TH.rgb + ',.08)']]); x.fillRect(mx, y, cw, rowH); x.restore();
+      rr(x, mx, y, cw, rowH, 20); x.lineWidth = 1.8; x.strokeStyle = 'rgba(' + TH.rgb + ',.38)'; x.stroke();
+      var rk = String(i + 1).padStart(2, '0'), rkS = rowH * 0.62;
+      x.font = '800 ' + rkS + 'px ' + NUM; x.textAlign = 'left'; x.textBaseline = 'middle'; x.fillStyle = medal(i, y + rowH * 0.2, y + rowH * 0.8); x.fillText(rk, mx + 26, y + rowH / 2 + 2);
+      var pcx = mx + 26 + rowH * 0.78 + pr + 10, pcy = y + rowH / 2;
+      x.beginPath(); x.arc(pcx, pcy, pr + 5, 0, 7); x.fillStyle = medal(i, pcy - pr, pcy + pr); x.fill();
+      x.save(); x.beginPath(); x.arc(pcx, pcy, pr, 0, 7); x.clip();
+      if (im) { var s1 = Math.max(pr * 2 / im.width, pr * 2 / im.height), w1 = im.width * s1, h1 = im.height * s1; x.drawImage(im, pcx - w1 / 2, pcy - pr, w1, h1); }
+      else { x.fillStyle = '#26211A'; x.fillRect(pcx - pr, pcy - pr, pr * 2, pr * 2); T(String(r.name || '?').charAt(0).toUpperCase(), pcx, pcy + 2, pr * 1.2, '800', 'rgba(255,255,255,.25)', 'center', NUM, 0); }
       x.restore();
-      rr(x, cx + 6, cy + ch - 100, cw - 12, 56, 18); x.fillStyle = '#080808'; x.fill();
-      rr(x, cx + 14, cy + ch - 90, 36, 36, 9); x.fillStyle = '#fff'; x.fill(); T(String(i + 1), cx + 32, cy + ch - 71, 28, '800', '#000', 'center', NUM, 0);
-      T((r.goals || 0) + 'G · ' + (r.wins || 0) + 'W', cx + 150, cy + ch - 71, 32, '800', '#fff', 'center', NUM, 1);
-      rr(x, cx + cw - 56, cy + ch - 88, 44, 32, 8); x.fillStyle = a; x.fill(); T(String(r.rating), cx + cw - 34, cy + ch - 71, 24, '800', '#000', 'center', NUM, 0);
-      var nm = String(r.name || '').toUpperCase(), nf = 26; x.font = '800 ' + nf + 'px ' + NUM; while (x.measureText(nm).width > cw - 30 && nf > 14) { nf -= 1; x.font = '800 ' + nf + 'px ' + NUM; }
-      T(nm, cx + cw / 2 + 20, cy + ch - 28, nf, '800', '#000', 'center', NUM, 1);
-      x.strokeStyle = '#2B2B2B'; x.lineWidth = 2; rr(x, cx, cy, cw, ch, 26); x.stroke();
-    });
-    var fy = H - (story ? 120 : 62);
-    try { var logo = await loadImg(LOGO); x.save(); x.beginPath(); x.arc(W / 2 - 150, fy, 30, 0, 7); x.fillStyle = '#fff'; x.fill(); x.clip(); x.drawImage(logo, W / 2 - 178, fy - 28, 56, 56); x.restore(); } catch (e) { /* skip */ }
-    T('SRT · SEASON ' + new Date().getFullYear(), W / 2 - 100, fy + 2, 34, '800', '#fff', 'left', NUM, 3);
+      var nx = pcx + pr + 30, bw = rowH * 0.92, bx = mx + cw - 24 - bw, avW = bx - nx - 20, nmS = fit(String(r.name || '').toUpperCase(), avW, rowH * 0.42, '800', 1);
+      T(String(r.name || '').toUpperCase(), nx, y + rowH * 0.38, nmS, '800', '#fff', 'left', NUM, 1);
+      T((r.goals || 0) + ((r.goals || 0) === 1 ? ' GOAL' : ' GOALS') + '   ·   ' + (r.wins || 0) + ((r.wins || 0) === 1 ? ' WIN' : ' WINS'), nx, y + rowH * 0.74, rowH * 0.2, '700', TH.m, 'left', NUM, 3);
+      rr(x, bx, y + rowH * 0.14, bw, rowH * 0.72, 16); x.fillStyle = foil(y, y + rowH); x.fill();
+      T(String(r.rating), bx + bw / 2, y + rowH * 0.46, rowH * 0.44, '800', TH.d, 'center', NUM, 0); T('OVR', bx + bw / 2, y + rowH * 0.73, rowH * 0.15, '800', TH.d2, 'center', NUM, 3);
+    }
+    /* footer */
+    var fy = H - (story ? 92 : 58);
+    T('SRT  ·  SEASON ' + new Date().getFullYear(), cx0, fy, 32, '700', 'rgba(' + TH.tint + ',.85)', 'center', NUM, 8);
     return new Promise(function (res, rej) { cv.toBlob(function (bl) { bl ? res(bl) : rej(new Error('blob')); }, 'image/png'); });
   }
   async function drawStatsPoster(card, W, H) {
@@ -4784,6 +4842,16 @@ html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme
           avatar(l, 40), h('span', { class: 't' }, l.name)));
       });
       wrap.append(chips);
+    }
+    if (c.kind === 'board') {
+      var TSW = [['gold', 'Gold', '#F7CF67', '#C58A1E'], ['emerald', 'Emerald', '#4FE3A4', '#15855A'], ['blue', 'Blue', '#6FB8FF', '#2465C2'], ['crimson', 'Crimson', '#FF6B6B', '#B3202B'], ['violet', 'Violet', '#B58CFF', '#6C36C9']];
+      var sw = h('div', { class: 'tsw', role: 'group', 'aria-label': 'Card colour' });
+      TSW.forEach(function (t) {
+        var on = (c.theme || 'gold') === t[0];
+        sw.append(h('button', { class: 'tsw-b', 'aria-pressed': on ? 'true' : 'false', 'aria-label': t[1], onclick: function () { if (!on) { c.theme = t[0]; buildCard(); } } },
+          h('span', { class: 'tsw-d', style: 'background:linear-gradient(145deg,' + t[2] + ',' + t[3] + ')' }), h('span', { class: 'tsw-t' }, t[1])));
+      });
+      wrap.append(sw);
     }
     wrap.append(h('div', null, h('div', { class: 'seg', role: 'group', 'aria-label': 'Card size' },
       h('button', { 'aria-pressed': c.fmt === 'post' ? 'true' : 'false', onclick: function () { if (c.fmt !== 'post') { c.fmt = 'post'; buildCard(); } } }, 'Post 4:5'),

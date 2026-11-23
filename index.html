@@ -1826,6 +1826,34 @@ html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme
 .tsw-b[aria-pressed="true"]{border-color:#fff;background:rgba(255,255,255,.1);box-shadow:0 0 0 1px rgba(255,255,255,.35)}
 .tsw-d{width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35),0 3px 8px rgba(0,0,0,.4)}
 .tsw-t{font-size:11px;font-weight:700;letter-spacing:.04em}
+
+/* v15: home bottom sections */
+.hb{gap:22px}
+.hb-snap{gap:12px}
+.hb-card{position:relative;flex:0 0 172px;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 12px 14px;border-radius:20px;color:inherit;font:inherit;cursor:pointer;text-align:center;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.1);box-shadow:0 12px 28px rgba(0,0,0,.35)}
+.hb-card.first{border-color:var(--gold);box-shadow:0 12px 30px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.04),0 0 26px rgba(var(--glow,255,170,60),.18)}
+.hb-rank{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:800 13px var(--f-num);color:#2a1803;background:linear-gradient(145deg,var(--gold-hi),var(--gold))}
+.hb-av{display:block;width:82px;height:82px;border-radius:50%;padding:3px;background:linear-gradient(145deg,var(--gold-hi),var(--gold));overflow:hidden}
+.hb-av>*{width:100%!important;height:100%!important;border-radius:50%!important;object-fit:cover}
+.hb-nm{font:800 17px/1.1 var(--f-display);letter-spacing:.03em;text-transform:uppercase;min-height:2.2em;display:grid;place-items:center;word-break:break-word}
+.hb-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;padding:8px 6px;border-radius:12px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06)}
+.hb-meta span{display:flex;flex-direction:column;gap:1px}.hb-meta i{font-style:normal;font-size:10px;letter-spacing:.14em;color:#9b8f7c;font-weight:700}.hb-meta em{font:800 16px var(--f-num);font-style:normal;color:#fff}
+.hb-lab{font-size:10px;letter-spacing:.22em;color:#9b8f7c;font-weight:700;margin-top:2px}
+.hb-big{font:800 34px/1 var(--f-num);color:var(--gold-hi);text-shadow:0 0 18px rgba(var(--glow,255,170,60),.35)}
+.hb-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hb-tile{display:flex;flex-direction:column;align-items:center;gap:4px;padding:18px 10px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.1)}
+.hb-tile b{font:800 40px/1 var(--f-num);color:var(--gold-hi);text-shadow:0 0 20px rgba(var(--glow,255,170,60),.3)}
+.hb-tile span{font-size:11px;letter-spacing:.2em;font-weight:700;color:#a89c88}
+.hb-pt{position:relative;flex:0 0 150px;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 12px;border-radius:18px;color:inherit;text-decoration:none;text-align:center;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.1)}
+.hb-pl{width:60px;height:60px;border-radius:16px;display:grid;place-items:center;font:800 28px var(--f-display);color:#2a1803;background:linear-gradient(145deg,var(--gold-hi),var(--gold))}
+.hb-pt b{font:800 16px/1.15 var(--f-display);letter-spacing:.03em;text-transform:uppercase;word-break:break-word}
+.hb-pt small{font-size:10px;letter-spacing:.2em;color:var(--teal);font-weight:700;text-transform:uppercase}
+.hb-x{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:#fff;display:grid;place-items:center;padding:0}
+.hb-cts{display:grid;gap:10px}
+.hb-ct{display:flex;align-items:center;justify-content:center;gap:10px;padding:15px;border-radius:16px;text-decoration:none;color:var(--gold-hi);font:800 16px var(--f-display);letter-spacing:.14em;text-transform:uppercase;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--gold)}
+.hb .ann-ed .input{margin-bottom:8px;width:100%}
+html[data-day-theme]:not([data-day-theme="Gold"]) .tsw-d{filter:hue-rotate(var(--hue-n))}
+html[data-day-theme]:not([data-day-theme="Gold"]) iframe,html[data-day-theme]:not([data-day-theme="Gold"]) .tournament-frame{filter:hue-rotate(var(--hue-n))}
 </style>
 </head>
 <body>
@@ -4342,8 +4370,8 @@ html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme
     var parts = nm0.split(/\s+/), last = parts.length > 1 ? parts.pop() : '', first = parts.join(' ');
     if (last) { var f1 = fit(first, cw * 0.5, story ? 52 : 46, '700', 4); T(first, tx, yh + heroH * 0.40, f1, '700', 'rgba(' + TH.tint + ',.9)', 'left', NUM, 4); var f2 = fit(last, cw * 0.54, story ? 122 : 106, '800', 1); T(last, tx, yh + heroH * 0.40 + f1 * 0.55 + f2 * 0.52, f2, '800', '#fff', 'left', NUM, 1); }
     else { T(nm0, tx, yh + heroH * 0.5, nmH, '800', '#fff', 'left', NUM, 1); }
-    var cy2 = yh + heroH - 108, chips = [[String(r0.goals || 0), 'GOALS'], [String(r0.wins || 0), 'WINS'], [String(r0.rating), 'OVR']], chw = Math.min(150, (cw * 0.5 - 20) / 3), ccx = tx;
-    chips.forEach(function (c, k) { var w = chw, gold = k === 2; rr(x, ccx, cy2, w, 84, 14); x.fillStyle = gold ? foil(cy2, cy2 + 84) : 'rgba(255,255,255,.07)'; x.fill(); if (!gold) { x.lineWidth = 1.5; x.strokeStyle = 'rgba(' + TH.rgb + ',.45)'; x.stroke(); } T(c[0], ccx + w / 2, cy2 + 36, 54, '800', gold ? TH.d : '#fff', 'center', NUM, 0); T(c[1], ccx + w / 2, cy2 + 68, 20, '700', gold ? TH.d2 : TH.m, 'center', NUM, 4); ccx += w + 12; });
+    var cy2 = yh + heroH - 108, chips = [[String(r0.matches || 0), 'MATCHES'], [String(r0.goals || 0), 'GOALS'], [String(r0.wins || 0), 'WINS'], [String(r0.rating), 'OVR']], chw = Math.min(150, (cw * 0.62 - 30) / 4), ccx = tx;
+    chips.forEach(function (c, k) { var w = chw, gold = k === 3; rr(x, ccx, cy2, w, 84, 14); x.fillStyle = gold ? foil(cy2, cy2 + 84) : 'rgba(255,255,255,.07)'; x.fill(); if (!gold) { x.lineWidth = 1.5; x.strokeStyle = 'rgba(' + TH.rgb + ',.45)'; x.stroke(); } T(c[0], ccx + w / 2, cy2 + 36, 54, '800', gold ? TH.d : '#fff', 'center', NUM, 0); T(c[1], ccx + w / 2, cy2 + 68, 17, '700', gold ? TH.d2 : TH.m, 'center', NUM, 4); ccx += w + 10; });
     /* list rows */
     for (var i = 1; i < n; i++) {
       var r = rows[i], y = yh + heroH + gap + (i - 1) * (rowH + gap), im = imgs[i], pr = rowH * 0.36;
@@ -4360,7 +4388,7 @@ html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme
       x.restore();
       var nx = pcx + pr + 30, bw = rowH * 0.92, bx = mx + cw - 24 - bw, avW = bx - nx - 20, nmS = fit(String(r.name || '').toUpperCase(), avW, rowH * 0.42, '800', 1);
       T(String(r.name || '').toUpperCase(), nx, y + rowH * 0.38, nmS, '800', '#fff', 'left', NUM, 1);
-      T((r.goals || 0) + ((r.goals || 0) === 1 ? ' GOAL' : ' GOALS') + '   ·   ' + (r.wins || 0) + ((r.wins || 0) === 1 ? ' WIN' : ' WINS'), nx, y + rowH * 0.74, rowH * 0.2, '700', TH.m, 'left', NUM, 3);
+      var st = (r.matches || 0) + ((r.matches || 0) === 1 ? ' MATCH' : ' MATCHES') + '  ·  ' + (r.goals || 0) + ((r.goals || 0) === 1 ? ' GOAL' : ' GOALS') + '  ·  ' + (r.wins || 0) + ((r.wins || 0) === 1 ? ' WIN' : ' WINS'), stS = fit(st, avW, rowH * 0.2, '700', 2); T(st, nx, y + rowH * 0.74, stS, '700', TH.m, 'left', NUM, 2);
       rr(x, bx, y + rowH * 0.14, bw, rowH * 0.72, 16); x.fillStyle = foil(y, y + rowH); x.fill();
       T(String(r.rating), bx + bw / 2, y + rowH * 0.46, rowH * 0.44, '800', TH.d, 'center', NUM, 0); T('OVR', bx + bw / 2, y + rowH * 0.73, rowH * 0.15, '800', TH.d2, 'center', NUM, 3);
     }
@@ -4802,7 +4830,7 @@ html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme
   }
   function openBoardCard(active) {
     var rs = range(S.period, S.offset);
-    var rows = active.slice(0, 6).map(function (r, i) { return { rank: i + 1, name: r.p.name, photo: r.p.photo || null, wins: r.wins, draws: r.draws, goals: r.goals, rating: ratingFor(r.id) }; });
+    var rows = active.slice(0, 6).map(function (r, i) { return { rank: i + 1, name: r.p.name, photo: r.p.photo || null, wins: r.wins, draws: r.draws, losses: r.losses || 0, matches: (r.wins || 0) + (r.draws || 0) + (r.losses || 0), goals: r.goals, rating: ratingFor(r.id) }; });
     startCard(S.period, S.offset, [], 'board', rows);
   }
   function startCard(period, offset, leaders, kind, rows) {
@@ -5464,6 +5492,100 @@ html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme
         h('span', { class: 'lm-t' }, h('b', null, m.cap || 'Match moment'), h('em', null, (m.by || 'SRT Admin') + (dt ? ' · ' + dt : '')) ),
         h('span', { class: 'lm-b' }, hIco('camera', 'Open gallery'))));
   }
+
+  /* ---- v15: bottom of Home — scorers, top players, club stats, partners, contact ---- */
+  function cfgListen() {
+    if (!S.db || S.cfgOn) return; S.cfgOn = true;
+    ['partners', 'contact'].forEach(function (k) {
+      S.db.doc('t_cfg/' + k).onSnapshot(function (sn) { S['cfg_' + k] = sn.exists ? sn.data() : null; if (S.tab === 'home') renderView(); }, function (e) { console.error(e); });
+    });
+  }
+  function cntUp(el, to) {
+    var t0 = null, d = 900; to = Number(to) || 0; if (to < 2) { el.textContent = String(to); return; }
+    function st(ts) { if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / d), e = 1 - Math.pow(1 - p, 3); el.textContent = String(Math.round(to * e)); if (p < 1) requestAnimationFrame(st); }
+    el.textContent = '0'; requestAnimationFrame(st);
+  }
+  function hbHead(k, t, sub) { return h('div', { class: 'sl-head' }, h('span', { class: 'sl-k' }, k), h('h3', null, t), sub ? h('small', null, sub) : null); }
+  function hbPlayerCards(list, mode) {
+    var track = h('div', { class: 'sl-snap hb-snap' });
+    list.forEach(function (e, i) {
+      var p = e.p, m = e.wins + e.draws + e.losses, big = mode === 'goals' ? e.goals : ratingFor(e.id);
+      var meta = mode === 'goals'
+        ? [['MP', m], ['G/M', m ? (e.goals / m).toFixed(2) : '0.00']]
+        : [['MP', m], ['WIN %', m ? Math.round(e.wins * 100 / m) + '%' : '0%']];
+      track.append(h('button', { type: 'button', class: 'hb-card' + (i === 0 ? ' first' : ''), onclick: function () { openSheet('profile', e.id); } },
+        h('span', { class: 'hb-rank' }, String(i + 1)),
+        h('span', { class: 'hb-av' }, avatar(p, 76)),
+        h('b', { class: 'hb-nm' }, p.name),
+        h('span', { class: 'hb-meta' }, meta.map(function (q) { return h('span', null, h('i', null, q[0]), h('em', null, String(q[1]))); })),
+        h('span', { class: 'hb-lab' }, mode === 'goals' ? 'GOALS FOR' : 'RATING'),
+        h('strong', { class: 'hb-big' }, String(big))));
+    });
+    return track;
+  }
+  function hbStats() {
+    var pl = S.players ? S.players.size : 0, res = 0, goals = 0, wn = 0;
+    S.wins.forEach(function (w) { res++; goals += w.goals || 0; if (w.type !== 'draw' && w.type !== 'loss') wn++; });
+    var tiles = [['PLAYERS', pl], ['RESULTS LOGGED', res], ['GOALS SCORED', goals], ['WINS', wn]];
+    var grid = h('div', { class: 'hb-stats' });
+    tiles.forEach(function (t) { var n = h('b', null, '0'); grid.append(h('div', { class: 'hb-tile' }, n, h('span', null, t[0]))); setTimeout(function () { cntUp(n, t[1]); }, 30); });
+    return grid;
+  }
+  function hbPartners() {
+    var d = S.cfg_partners, items = d && d.items ? d.items.slice() : [], out = [];
+    function save(arr) { S.db.doc('t_cfg/partners').set({ items: arr, ts: Date.now() }).then(function () { toast('Saved'); }).catch(function (e) { console.error(e); toast('Not saved. Log in as an admin.'); }); }
+    if (items.length || S.canWrite) out.push(hbHead('FRIENDS OF THE CLUB', 'Platforms & Partners', 'Who stands with Rolling Thunder'));
+    if (items.length) {
+      var tr = h('div', { class: 'sl-snap hb-snap' });
+      items.forEach(function (it, i) {
+        var card = h(it.link ? 'a' : 'div', { class: 'hb-pt', href: it.link || null, target: it.link ? '_blank' : null, rel: it.link ? 'noopener' : null },
+          h('span', { class: 'hb-pl' }, String(it.name || '?').trim().charAt(0).toUpperCase()), h('b', null, it.name), h('small', null, it.role || 'PARTNER'));
+        if (S.canWrite) card.append(h('button', { class: 'hb-x', 'aria-label': 'Remove', onclick: function (ev) { ev.preventDefault(); ev.stopPropagation(); items.splice(i, 1); save(items); } }, icon('close')));
+        tr.append(card);
+      });
+      out.push(tr);
+    }
+    if (S.canWrite) {
+      var n = h('input', { class: 'input', placeholder: 'Name (e.g. Sylhet Gaming Zone)', maxlength: '40' }), r = h('input', { class: 'input', placeholder: 'Role (Sponsor, Partner...)', maxlength: '24' }), l = h('input', { class: 'input', placeholder: 'Link (optional, https://...)', maxlength: '200' });
+      out.push(h('details', { class: 'ann-ed' }, h('summary', null, hIco('plus', 'Add partner')), n, r, l,
+        h('div', { class: 'actions' }, h('button', { class: 'btn sm', onclick: function () {
+          var nm = n.value.trim(); if (!nm) { toast('Write a name'); return; }
+          var lk = l.value.trim(); if (lk && !/^https?:\/\//i.test(lk)) { toast('Link must start with https://'); return; }
+          items.push({ name: nm, role: r.value.trim(), link: lk }); save(items); } }, 'Add'))));
+    }
+    return out.length ? h('section', { class: 'sl-sec' }, out) : null;
+  }
+  function hbContact() {
+    var d = S.cfg_contact || {}, btns = [];
+    function mk(ic, lab, href) { return h('a', { class: 'hb-ct', href: href, target: '_blank', rel: 'noopener' }, lab); }
+    if (d.fb) btns.push(mk('share', 'Facebook', d.fb));
+    if (d.wa) btns.push(mk('chat', 'WhatsApp', 'https://wa.me/' + String(d.wa).replace(/[^0-9]/g, '')));
+    if (d.email) btns.push(mk('mail', 'Email', 'mailto:' + d.email));
+    var out = [];
+    if (btns.length || S.canWrite) out.push(hbHead('GET IN TOUCH', 'Contact Us', 'Join the club, sponsor us or ask anything'));
+    if (btns.length) out.push(h('div', { class: 'hb-cts' }, btns));
+    if (S.canWrite) {
+      var fb = h('input', { class: 'input', placeholder: 'Facebook page link', value: d.fb || '' }), wa = h('input', { class: 'input', placeholder: 'WhatsApp number (88017...)', value: d.wa || '' }), em = h('input', { class: 'input', placeholder: 'Email', value: d.email || '' });
+      out.push(h('details', { class: 'ann-ed' }, h('summary', null, hIco('plus', 'Edit contact links')), fb, wa, em,
+        h('div', { class: 'actions' }, h('button', { class: 'btn sm', onclick: function () {
+          var f = fb.value.trim(); if (f && !/^https?:\/\//i.test(f)) { toast('Facebook link must start with https://'); return; }
+          S.db.doc('t_cfg/contact').set({ fb: f, wa: wa.value.trim(), email: em.value.trim(), ts: Date.now() }).then(function () { toast('Saved'); }).catch(function (e) { console.error(e); toast('Not saved. Log in as an admin.'); }); } }, 'Save'))));
+    }
+    return out.length ? h('section', { class: 'sl-sec' }, out) : null;
+  }
+  function homeBottom() {
+    var box = h('div', { class: 'stack sl hb' }), all = [];
+    try { all = ranking(-Infinity, Infinity).filter(function (x) { return x.wins || x.draws || x.losses; }); } catch (e) { /* ignore */ }
+    if (all.length) {
+      var sc = all.slice().sort(function (a, b) { return b.goals - a.goals; }).filter(function (x) { return x.goals > 0; }).slice(0, 8);
+      if (sc.length) box.append(h('section', { class: 'sl-sec' }, hbHead('GOLDEN BOOT', 'Top Scorers', 'All-time goals'), hbPlayerCards(sc, 'goals')));
+      var tp = all.slice().sort(function (a, b) { return ratingFor(b.id) - ratingFor(a.id); }).slice(0, 8);
+      box.append(h('section', { class: 'sl-sec' }, hbHead('THE BEST OF THE BEST', 'Top Players', 'By club rating'), hbPlayerCards(tp, 'rating')));
+      box.append(h('section', { class: 'sl-sec' }, hbHead('BY THE NUMBERS', 'All-Time Statistics', 'Since day one'), hbStats()));
+    }
+    [hbPartners(), hbContact()].forEach(function (e) { if (e) box.append(e); });
+    return box.childNodes.length ? box : null;
+  }
   function srtHome() {
     var root = homeViewOld();
     var tw = 0, td = 0, tl = 0, tg = 0;
@@ -5486,6 +5608,7 @@ html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme
     if (first) { root.insertBefore(board, first); first.after(rail); } else { root.prepend(board); }
     var _ab = annBanner(); if (_ab) root.prepend(_ab);
     if (rail.parentNode) { var _anc = rail; [latestMoment()].forEach(function (e) { if (e) { _anc.after(e); _anc = e; } }); }
+    var _hbx = homeBottom(); if (_hbx) { var _sl = root.querySelector('.stack.sl'); if (_sl) _sl.after(_hbx); else root.append(_hbx); }
     var m = root.querySelector('.home-metrics'); if (m) m.remove();
     return root;
   }
@@ -6973,7 +7096,7 @@ html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme
     ntcListen();
     listenAC();
     listenSignings();
-    lgListen(); annListen(); lmListen();
+    lgListen(); annListen(); lmListen(); cfgListen();
     bdListenPublic();
     S.auth.onAuthStateChanged(async function (u) {
       S.user = u; S.canWrite = false;

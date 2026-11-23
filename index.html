@@ -1854,6 +1854,8 @@ html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme
 .hb .ann-ed .input{margin-bottom:8px;width:100%}
 html[data-day-theme]:not([data-day-theme="Gold"]) .tsw-d{filter:hue-rotate(var(--hue-n))}
 html[data-day-theme]:not([data-day-theme="Gold"]) iframe,html[data-day-theme]:not([data-day-theme="Gold"]) .tournament-frame{filter:hue-rotate(var(--hue-n))}
+.sl-heat .sl-cell{aspect-ratio:1.55}
+.sl-heat{gap:5px}
 </style>
 </head>
 <body>
@@ -5654,16 +5656,17 @@ html[data-day-theme]:not([data-day-theme="Gold"]) iframe,html[data-day-theme]:no
     }
     /* 4. activity heat grid: 5 weeks x 7 days */
     var cells = h('div', { class: 'sl-heat' }), DAY = 864e5, max = 1, cnt = {};
-    var start = wk.start - 4 * 7 * DAY;
+    var first = Infinity; S.wins.forEach(function (w) { if (w.ts && w.ts < first) first = w.ts; });
+    var nW = isFinite(first) ? Math.max(5, Math.min(26, Math.ceil((wk.end - first) / (7 * DAY)))) : 5, start = wk.end - nW * 7 * DAY, since = nW < 26 && isFinite(first);
     S.wins.forEach(function (w) { if (w.ts >= start && w.ts < wk.end) { var d = Math.floor((w.ts - start) / DAY); cnt[d] = (cnt[d] || 0) + 1; max = Math.max(max, cnt[d]); } });
     ['S', 'S', 'M', 'T', 'W', 'T', 'F'].forEach(function (d) { cells.append(h('span', { class: 'sl-dn' }, d)); });
-    for (var i = 0; i < 35; i++) {
+    for (var i = 0; i < nW * 7; i++) {
       var c = cnt[i] || 0, cell = h('span', { class: 'sl-cell', title: c + ' results' });
       cell.style.setProperty('--a', c ? (0.25 + 0.75 * c / max).toFixed(2) : '0');
       if (start + i * DAY > Date.now()) cell.classList.add('fut');
       cells.append(cell);
     }
-    stack.append(h('section', { class: 'sl-sec' }, head('CLUB PULSE', 'Activity, last 5 weeks', 'Brighter = more matches recorded'), cells));
+    stack.append(h('section', { class: 'sl-sec' }, head('CLUB PULSE', since ? 'Activity since day one' : 'Activity, last ' + nW + ' weeks', 'Brighter = more matches recorded · ' + nW + ' weeks'), cells));
     /* 5. dare */
     var dare = arenaHero();
     if (dare && dare.nodeType === 1) { dare.style.cursor = 'pointer'; var af = dare.querySelector('.ah-f'); if (af) af.textContent = 'A new target every day · tap to open the Arena →'; dare.addEventListener('click', function () { goTab('fun'); }); stack.append(dare); }

@@ -1810,9 +1810,6 @@ body>*{position:relative;z-index:1}
 body,html{transition:none}
 
 /* daily colour: rotate the whole accent hue, keep photos natural */
-html[data-day-theme]:not([data-day-theme="Gold"]){filter:hue-rotate(var(--hue))}
-html[data-day-theme]:not([data-day-theme="Gold"]) img,html[data-day-theme]:not([data-day-theme="Gold"]) video,html[data-day-theme]:not([data-day-theme="Gold"]) canvas,html[data-day-theme]:not([data-day-theme="Gold"]) .photo,html[data-day-theme]:not([data-day-theme="Gold"]) .sb-num,html[data-day-theme]:not([data-day-theme="Gold"]) .sb-n{filter:hue-rotate(var(--hue-n))}
-html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell span{filter:hue-rotate(var(--hue-n))}
 
 /* v14b: no theme toggle in header; premium announcement type */
 #role .hdr-tools,#role .iconbtn{display:none!important}
@@ -1852,12 +1849,35 @@ html[data-day-theme]:not([data-day-theme="Gold"]) .sb-cell b,html[data-day-theme
 .hb-cts{display:grid;gap:10px}
 .hb-ct{display:flex;align-items:center;justify-content:center;gap:10px;padding:15px;border-radius:16px;text-decoration:none;color:var(--gold-hi);font:800 16px var(--f-display);letter-spacing:.14em;text-transform:uppercase;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--gold)}
 .hb .ann-ed .input{margin-bottom:8px;width:100%}
-html[data-day-theme]:not([data-day-theme="Gold"]) .tsw-d{filter:hue-rotate(var(--hue-n))}
-html[data-day-theme]:not([data-day-theme="Gold"]) iframe,html[data-day-theme]:not([data-day-theme="Gold"]) .tournament-frame{filter:hue-rotate(var(--hue-n))}
 .sl-heat .sl-cell{aspect-ratio:1.55}
 .sl-heat{gap:5px}
-html[data-day-theme]:not([data-day-theme="Gold"]) svg image{filter:hue-rotate(var(--hue-n))}
+.tsw.six{grid-template-columns:repeat(6,1fr)}
+.tsw.six .tsw-t{font-size:10px}
 </style>
+<script>
+/* daily colour theme: recolour the warm accent colours in the stylesheets (no filters, photos stay natural) */
+(function () {
+  try {
+    var OFF = [0, 105, 165, 225, 335, 135], NM = ['Gold', 'Emerald', 'Ice', 'Violet', 'Ember', 'Aqua'];
+    var day = Math.floor((Date.now() + 6 * 3600000) / 86400000), i = day % OFF.length, off = OFF[i];
+    document.documentElement.setAttribute('data-day-theme', NM[i]); window.SRT_HUE = off;
+    if (!off) return;
+    function toHsl(r, g, b) { r /= 255; g /= 255; b /= 255; var mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn, h = 0, s = 0;
+      if (d) { s = d / (1 - Math.abs(2 * l - 1)); if (mx === r) h = ((g - b) / d) % 6; else if (mx === g) h = (b - r) / d + 2; else h = (r - g) / d + 4; h *= 60; if (h < 0) h += 360; } return [h, s, l]; }
+    function fromHsl(h, s, l) { var c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c / 2, r = 0, g = 0, b = 0;
+      if (h < 60) { r = c; g = x; } else if (h < 120) { r = x; g = c; } else if (h < 180) { g = c; b = x; } else if (h < 240) { g = x; b = c; } else if (h < 300) { r = x; b = c; } else { r = c; b = x; }
+      return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)]; }
+    function shift(r, g, b) { var q = toHsl(r, g, b); if (q[0] >= 8 && q[0] <= 62 && q[1] >= 0.22) return fromHsl((q[0] + off) % 360, q[1], q[2]); return null; }
+    var hex2 = function (n) { return ('0' + n.toString(16)).slice(-2); };
+    document.querySelectorAll('style').forEach(function (st) {
+      var t = st.textContent;
+      t = t.replace(/#([0-9a-fA-F]{6})\b/g, function (m, h) { var n = parseInt(h, 16), o = shift(n >> 16 & 255, n >> 8 & 255, n & 255); return o ? '#' + hex2(o[0]) + hex2(o[1]) + hex2(o[2]) : m; });
+      t = t.replace(/rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(,\s*[\d.]+\s*)?\)/g, function (m, r, g, b, a) { var o = shift(+r, +g, +b); return o ? (a ? 'rgba(' : 'rgb(') + o[0] + ',' + o[1] + ',' + o[2] + (a ? a : '') + ')' : m; });
+      st.textContent = t;
+    });
+  } catch (e) { /* ignore */ }
+})();
+</script>
 </head>
 <body>
 <div id="srtSplash" aria-hidden="true"><img src="logo.webp" alt=""></div>
@@ -3890,6 +3910,14 @@ html[data-day-theme]:not([data-day-theme="Gold"]) svg image{filter:hue-rotate(va
     return { wins: wins, draws: draws, losses: losses, goals: goals };
   }
   var __pcN = 0;
+  var PAL_T = {
+    gold: { a: '#FFE9A8', b: '#E9B54A', c: '#9A6A1E', v0: '#FFF3C4', v1: '#F2C45A', v2: '#B47A26', t: '#F2C45A', glow: '#FF8A3D', sub: '#E9D7B0', mut: '#A99874' },
+    emerald: { a: '#C9FFE6', b: '#3FD493', c: '#14704A', v0: '#E2FFF1', v1: '#5BE3A7', v2: '#1C8A5C', t: '#5BE3A7', glow: '#28C88C', sub: '#C4EBD8', mut: '#7FA896' },
+    blue: { a: '#D3EBFF', b: '#4FA3F5', c: '#1B4FA0', v0: '#E8F4FF', v1: '#6FB8FF', v2: '#2465C2', t: '#6FB8FF', glow: '#3C8CFF', sub: '#C8DDF2', mut: '#7E98B5' },
+    crimson: { a: '#FFD3D3', b: '#E5484D', c: '#8E1520', v0: '#FFE5E5', v1: '#FF6B6B', v2: '#B3202B', t: '#FF6B6B', glow: '#F03C46', sub: '#F2CACA', mut: '#B58383' },
+    violet: { a: '#EBDCFF', b: '#9B6BF0', c: '#4F2394', v0: '#F4EBFF', v1: '#B58CFF', v2: '#6C36C9', t: '#B58CFF', glow: '#8C5AFF', sub: '#DCCDF5', mut: '#9A87B8' }
+  };
+  function srtPalT(theme, tier) { return PAL_T[theme] || srtPal(tier && tier.k ? tier.k : tier); }
   function srtPal(n) {
     n = String(n || '').toLowerCase();
     if (n.indexOf('legend') > -1) return { a: '#FFF0B0', b: '#FF9F3A', c: '#A8480F', v0: '#FFF6D0', v1: '#FFB34A', v2: '#C4601A', t: '#FFB34A', glow: '#FF7A2D', sub: '#E9D0A8', mut: '#B49878' };
@@ -4244,11 +4272,11 @@ html[data-day-theme]:not([data-day-theme="Gold"]) svg image{filter:hue-rotate(va
     var NUM = '"Barlow Condensed","Saira Condensed","Arial Narrow",sans-serif';
     function sp(px) { if ('letterSpacing' in x) x.letterSpacing = px + 'px'; }
     var SQ = { MAIN: ['#D8311A', '#8E1A0D'], ACADEMY: ['#E8A317', '#9C6406'], YOUTH: ['#1FA86B', '#0B5E3A'] }[String(F.sqEn || '').split(' ')[0]] || ['#D8311A', '#8E1A0D'];
-    var bg = x.createLinearGradient(0, 0, W * 0.7, H); bg.addColorStop(0, '#0A0706'); bg.addColorStop(0.5, '#1A120C'); bg.addColorStop(1, '#060403');
+    var bg = x.createLinearGradient(0, 0, W * 0.7, H); bg.addColorStop(0, '#0A0706'); bg.addColorStop(0.5, { emerald: '#0E1B15', blue: '#0C1623', crimson: '#1F0D10', violet: '#150F23' }[card.theme] || '#1A120C'); bg.addColorStop(1, '#060403');
     x.fillStyle = bg; x.fillRect(0, 0, W, H);
     x.strokeStyle = 'rgba(255,255,255,0.03)'; x.lineWidth = 3;
     for (var lx = -H; lx < W; lx += 90) { x.beginPath(); x.moveTo(lx, H); x.lineTo(lx + H * 0.6, 0); x.stroke(); }
-    var vg = x.createRadialGradient(W / 2, H * 0.45, 80, W / 2, H * 0.45, H * 0.7); vg.addColorStop(0, 'rgba(255,150,60,0.22)'); vg.addColorStop(1, 'rgba(0,0,0,0.45)');
+    var vg = x.createRadialGradient(W / 2, H * 0.45, 80, W / 2, H * 0.45, H * 0.7); vg.addColorStop(0, { emerald: 'rgba(40,200,140,0.24)', blue: 'rgba(60,140,255,0.24)', crimson: 'rgba(240,60,70,0.24)', violet: 'rgba(140,90,255,0.24)' }[card.theme] || 'rgba(255,150,60,0.22)'); vg.addColorStop(1, 'rgba(0,0,0,0.45)');
     x.fillStyle = vg; x.fillRect(0, 0, W, H);
     var cw = story ? 940 : Math.min(860, (H - 120) / 1.42), k = cw / 100, ox = (W - cw) / 2, oy = (H - 142 * k) / 2 + (story ? 10 : 0);
     function X(v) { return ox + v * k; } function Y(v) { return oy + v * k; } function L(v) { return v * k; }
@@ -4257,7 +4285,7 @@ html[data-day-theme]:not([data-day-theme="Gold"]) svg image{filter:hue-rotate(va
     function txt(s, cx, cy, size, wt, col, ls, al) { x.font = wt + ' ' + L(size) + 'px ' + NUM; x.fillStyle = col; x.textAlign = al || 'center'; x.textBaseline = 'middle'; sp(ls ? L(ls) : 0); x.fillText(s, cx, cy); sp(0); }
     if (story) { txt('SYLHET ROLLING THUNDER', W / 2, 150, 4.6, '800', '#FFB547', 1.2); txt('#SRT · THUNDER FAMILY', W / 2, H - 120, 3.6, '700', 'rgba(255,255,255,.75)', 1); }
     /* frame */
-    var logo = null, P = srtPal(F.tier);
+    var logo = null, P = srtPalT(card.theme, F.tier);
     function SQT() { var n = String(F.sqEn || 'MAIN SQUAD').split(' ')[0]; return { MAIN: 'MAIN', ACADEMY: 'ACAD', YOUTH: 'YOUTH' }[n] || n; }
     function cut() { poly([[4, 0], [96, 0], [100, 4], [100, 138], [96, 142], [4, 142], [0, 138], [0, 4]]); }
     x.save(); x.shadowColor = 'rgba(0,0,0,0.7)'; x.shadowBlur = 60; x.shadowOffsetY = 24; cut(); x.fillStyle = P.b; x.fill(); x.restore();
@@ -4874,11 +4902,11 @@ html[data-day-theme]:not([data-day-theme="Gold"]) svg image{filter:hue-rotate(va
       });
       wrap.append(chips);
     }
-    if (c.kind === 'board') {
-      var TSW = [['gold', 'Gold', '#F7CF67', '#C58A1E'], ['emerald', 'Emerald', '#4FE3A4', '#15855A'], ['blue', 'Blue', '#6FB8FF', '#2465C2'], ['crimson', 'Crimson', '#FF6B6B', '#B3202B'], ['violet', 'Violet', '#B58CFF', '#6C36C9']];
-      var sw = h('div', { class: 'tsw', role: 'group', 'aria-label': 'Card colour' });
+    if (c.kind === 'board' || c.kind === 'fifa') {
+      var TSW = (c.kind === 'fifa' ? [['auto', 'Auto', '#E9B54A', '#8A5A1A']] : []).concat([['gold', 'Gold', '#F7CF67', '#C58A1E'], ['emerald', 'Emerald', '#4FE3A4', '#15855A'], ['blue', 'Blue', '#6FB8FF', '#2465C2'], ['crimson', 'Crimson', '#FF6B6B', '#B3202B'], ['violet', 'Violet', '#B58CFF', '#6C36C9']]);
+      var sw = h('div', { class: 'tsw' + (c.kind === 'fifa' ? ' six' : ''), role: 'group', 'aria-label': 'Card colour' });
       TSW.forEach(function (t) {
-        var on = (c.theme || 'gold') === t[0];
+        var on = (c.theme || (c.kind === 'fifa' ? 'auto' : 'gold')) === t[0];
         sw.append(h('button', { class: 'tsw-b', 'aria-pressed': on ? 'true' : 'false', 'aria-label': t[1], onclick: function () { if (!on) { c.theme = t[0]; buildCard(); } } },
           h('span', { class: 'tsw-d', style: 'background:linear-gradient(145deg,' + t[2] + ',' + t[3] + ')' }), h('span', { class: 'tsw-t' }, t[1])));
       });
@@ -5429,7 +5457,7 @@ html[data-day-theme]:not([data-day-theme="Gold"]) svg image{filter:hue-rotate(va
       var day = Math.floor((Date.now() + 6 * 3600000) / 86400000), t = DAY_THEMES[day % DAY_THEMES.length];
       var de = document.documentElement;
       de.style.setProperty('--hue', t.hue + 'deg'); de.style.setProperty('--hue-n', (-t.hue) + 'deg');
-      de.setAttribute('data-day-theme', t.n);
+      de.setAttribute('data-day-theme', t.n); window.SRT_HUE = t.hue;
     } catch (e) { /* ignore */ }
   }
   applyDayTheme();
